@@ -1,0 +1,442 @@
+[
+    {
+        "name": "bosh-azure-hyperv-ubuntu-jammy-go_agent",
+        "version": "1.682",
+        "regular": {
+            "url": "https://storage.googleapis.com/bosh-core-stemcells/1.682/bosh-stemcell-1.682-azure-hyperv-ubuntu-jammy-go_agent.tgz",
+            "size": 1253467594,
+            "md5": "",
+            "sha1": "c7d0acef5605a4c4e9dd55e03bbef5eb08b30137",
+            "sha256": "181fa9d348fd9af2d1ff55da9c081889873c39abb75a18b2e9622d92b2eae52f"
+        }
+    },
+    {
+        "name": "bosh-azure-hyperv-ubuntu-jammy-go_agent",
+        "version": "1.651",
+        "regular": {
+            "url": "https://storage.googleapis.com/bosh-core-stemcells/1.651/bosh-stemcell-1.651-azure-hyperv-ubuntu-jammy-go_agent.tgz",
+            "size": 1252854456,
+            "md5": "",
+            "sha1": "1175e254f77f19c24b8a1550d3f2ad253a0a59e9",
+            "sha256": "e41b0d0da9457b81f64b48985b4b99f1e7b1d043d170da346484c0bbf5a09ce2"
+        }
+    },
+    {
+        "name": "bosh-azure-hyperv-ubuntu-jammy-go_agent",
+        "version": "1.639",
+        "regular": {
+            "url": "https://storage.googleapis.com/bosh-core-stemcells/1.639/bosh-stemcell-1.639-azure-hyperv-ubuntu-jammy-go_agent.tgz",
+            "size": 1253049162,
+            "md5": "",
+            "sha1": "74f486a2e8481e0222880c6e6f2417dac448b39a",
+            "sha256": "07996e45909ab432d231afe8df7f04de40385a0b4c57fe8a6c8cb4a1943e053d"
+        }
+    },
+    {
+        "name": "bosh-azure-hyperv-ubuntu-jammy-go_agent",
+        "version": "1.631",
+        "regular": {
+            "url": "https://storage.googleapis.com/bosh-core-stemcells/1.631/bosh-stemcell-1.631-azure-hyperv-ubuntu-jammy-go_agent.tgz",
+            "size": 1252562170,
+            "md5": "",
+            "sha1": "0400a0eee082596837abc85da60e9af5db3d70f3",
+            "sha256": "2f3dd35520b5629ab432eb0fd8b9dc086ac171df5f6264e1db2f2c34dcf2a5ae"
+        }
+    },
+    {
+        "name": "bosh-azure-hyperv-ubuntu-jammy-go_agent",
+        "version": "1.621",
+        "regular": {
+            "url": "https://storage.googleapis.com/bosh-core-stemcells/1.621/bosh-stemcell-1.621-azure-hyperv-ubuntu-jammy-go_agent.tgz",
+            "size": 1252452546,
+            "md5": "",
+            "sha1": "a603f401e326a04e3c87f6ee8f682d81ce3db3a0",
+            "sha256": "d966ce9e21e09cc74e3ed04260354a6b5ba32e8fade1e25bb7f9be20b90f7549"
+        }
+    },
+    {
+        "name": "bosh-azure-hyperv-ubuntu-jammy-go_agent",
+        "version": "1.613",
+        "regular": {
+            "url": "https://storage.googleapis.com/bosh-core-stemcells/1.613/bosh-stemcell-1.613-azure-hyperv-ubuntu-jammy-go_agent.tgz",
+            "size": 1252476452,
+            "md5": "",
+            "sha1": "a25d04d46eba99631e34bf211b5df553d2d978e2",
+            "sha256": "c20a8e42930f1a5db302d89148c9c08211a24079c32d143762e69a3f805f371d"
+        }
+    },
+    {
+        "name": "bosh-azure-hyperv-ubuntu-jammy-go_agent",
+        "version": "1.572",
+        "regular": {
+            "url": "https://storage.googleapis.com/bosh-core-stemcells/1.572/bosh-stemcell-1.572-azure-hyperv-ubuntu-jammy-go_agent.tgz",
+            "size": 1211808238,
+            "md5": "",
+            "sha1": "62612082fe8829644403f6e06a3bfba71da92530",
+            "sha256": "77a6cb326721d4208a452830c2a4e7494f95052d2486f5458aba9628b94e5caa"
+        }
+    },
+    {
+        "name": "bosh-azure-hyperv-ubuntu-jammy-go_agent",
+        "version": "1.555",
+        "regular": {
+            "url": "https://storage.googleapis.com/bosh-core-stemcells/1.555/bosh-stemcell-1.555-azure-hyperv-ubuntu-jammy-go_agent.tgz",
+            "size": 1211258170,
+            "md5": "",
+            "sha1": "e0f4c00d5d290d822e05dc9725a5e1d15b1de07c",
+            "sha256": "1ddc8af3e8d864a4128288dfae2c736a68f689cb6b6f7315716281b9148e638c"
+        }
+    },
+    {
+        "name": "bosh-azure-hyperv-ubuntu-jammy-go_agent",
+        "version": "1.531",
+        "regular": {
+            "url": "https://storage.googleapis.com/bosh-core-stemcells/1.531/bosh-stemcell-1.531-azure-hyperv-ubuntu-jammy-go_agent.tgz",
+            "size": 1209580362,
+            "md5": "",
+            "sha1": "396c2bb8b3e2e37182f241690353cf0a25ad7d2a",
+            "sha256": "a5eda1fec9e2e86d3c848c0ee16ecb9079ef93468770a6d9016ec0bda6b1c65e"
+        }
+    },
+    {
+        "name": "bosh-azure-hyperv-ubuntu-jammy-go_agent",
+        "version": "1.529",
+        "regular": {
+            "url": "https://storage.googleapis.com/bosh-core-stemcells/1.529/bosh-stemcell-1.529-azure-hyperv-ubuntu-jammy-go_agent.tgz",
+            "size": 1209516092,
+            "md5": "",
+            "sha1": "116394e604264a3243562342dc6e68e3cb0fef05",
+            "sha256": "d9a65252813f5569cae6b8205c30ac22bb2761ddbfd62ffee923e0459d091f17"
+        }
+    },
+    {
+        "name": "bosh-azure-hyperv-ubuntu-jammy-go_agent",
+        "version": "1.506",
+        "regular": {
+            "url": "https://storage.googleapis.com/bosh-core-stemcells/1.506/bosh-stemcell-1.506-azure-hyperv-ubuntu-jammy-go_agent.tgz",
+            "size": 1209227435,
+            "md5": "",
+            "sha1": "1676f764d92204f2739159fed82e9de719438454",
+            "sha256": "9ecc1b6915c84590bdc42e9f97ef34c7b2b8ee078b2ae3ac7f352c11d339a9d0"
+        }
+    },
+    {
+        "name": "bosh-azure-hyperv-ubuntu-jammy-go_agent",
+        "version": "1.492",
+        "regular": {
+            "url": "https://storage.googleapis.com/bosh-core-stemcells/1.492/bosh-stemcell-1.492-azure-hyperv-ubuntu-jammy-go_agent.tgz",
+            "size": 1209080734,
+            "md5": "",
+            "sha1": "04dd967b5ce87a1d1ad2cb318dce926dbbd04a85",
+            "sha256": "8c03aa12470f7e646ef0f79f86fad12fda541bbb5c305adaaed7c2a7d50a12fb"
+        }
+    },
+    {
+        "name": "bosh-azure-hyperv-ubuntu-jammy-go_agent",
+        "version": "1.486",
+        "regular": {
+            "url": "https://storage.googleapis.com/bosh-core-stemcells/1.486/bosh-stemcell-1.486-azure-hyperv-ubuntu-jammy-go_agent.tgz",
+            "size": 1208641241,
+            "md5": "",
+            "sha1": "48274bdbb14780cfa93947a544aae67446928b84",
+            "sha256": "800df9653294205666d2e60cd0ebd66dc67cb19ce2e52d6cace5251cab21eafc"
+        }
+    },
+    {
+        "name": "bosh-azure-hyperv-ubuntu-jammy-go_agent",
+        "version": "1.465",
+        "regular": {
+            "url": "https://storage.googleapis.com/bosh-core-stemcells/1.465/bosh-stemcell-1.465-azure-hyperv-ubuntu-jammy-go_agent.tgz",
+            "size": 1208571324,
+            "md5": "",
+            "sha1": "ce89fb8985d08034f0835a80b17b3c1f98f948bb",
+            "sha256": "dea4e9635d52ea193594d8ebe63ddc1f3b423ba1f9181c55da45850d6cca2a90"
+        }
+    },
+    {
+        "name": "bosh-azure-hyperv-ubuntu-jammy-go_agent",
+        "version": "1.445",
+        "regular": {
+            "url": "https://storage.googleapis.com/bosh-core-stemcells/1.445/bosh-stemcell-1.445-azure-hyperv-ubuntu-jammy-go_agent.tgz",
+            "size": 1197028699,
+            "md5": "",
+            "sha1": "472b2f50cb06f6454659c73d050aefb877e9ae6c",
+            "sha256": "f343924ba36e3a2176e4189a46c1a06e4264c2c46bfdba6bdd4f1c1391f08af9"
+        }
+    },
+    {
+        "name": "bosh-azure-hyperv-ubuntu-jammy-go_agent",
+        "version": "1.439",
+        "regular": {
+            "url": "https://storage.googleapis.com/bosh-core-stemcells/1.439/bosh-stemcell-1.439-azure-hyperv-ubuntu-jammy-go_agent.tgz",
+            "size": 1196899863,
+            "md5": "",
+            "sha1": "462c9d8c1106abceb9aeac62a14e40ebb3be3cc1",
+            "sha256": "8c42385475d4e24df15ba46d5895655f2d2e1af848a841e1005d07f957c14f64"
+        }
+    },
+    {
+        "name": "bosh-azure-hyperv-ubuntu-jammy-go_agent",
+        "version": "1.423",
+        "regular": {
+            "url": "https://storage.googleapis.com/bosh-core-stemcells/1.423/bosh-stemcell-1.423-azure-hyperv-ubuntu-jammy-go_agent.tgz",
+            "size": 1186597774,
+            "md5": "",
+            "sha1": "0dbadc872d4995f2fda1519de15f73cac4025436",
+            "sha256": "1cce1aa96f48006c6f6d47130e72dcc35784b885b3bfd39c382827300549e6f3"
+        }
+    },
+    {
+        "name": "bosh-azure-hyperv-ubuntu-jammy-go_agent",
+        "version": "1.406",
+        "regular": {
+            "url": "https://storage.googleapis.com/bosh-core-stemcells/1.406/bosh-stemcell-1.406-azure-hyperv-ubuntu-jammy-go_agent.tgz",
+            "size": 1186433041,
+            "md5": "",
+            "sha1": "dde3ae25057a99562dd1b9da264b9b9b49ec2cdf",
+            "sha256": "13241fa76cd132c9b807c952905df8ad0a7b274a489546c4de38e2161cb81297"
+        }
+    },
+    {
+        "name": "bosh-azure-hyperv-ubuntu-jammy-go_agent",
+        "version": "1.404",
+        "regular": {
+            "url": "https://storage.googleapis.com/bosh-core-stemcells/1.404/bosh-stemcell-1.404-azure-hyperv-ubuntu-jammy-go_agent.tgz",
+            "size": 1186484356,
+            "md5": "",
+            "sha1": "a07625c4d19202c273636f534d6b1f9bea7c2eb3",
+            "sha256": "62d32e337c0292b173375c5112d94038f2862a7c1e0c2d59a2a8fbd80585961e"
+        }
+    },
+    {
+        "name": "bosh-azure-hyperv-ubuntu-jammy-go_agent",
+        "version": "1.390",
+        "regular": {
+            "url": "https://storage.googleapis.com/bosh-core-stemcells/1.390/bosh-stemcell-1.390-azure-hyperv-ubuntu-jammy-go_agent.tgz",
+            "size": 1219801724,
+            "md5": "",
+            "sha1": "4574e4b039fea2244177b77f9646ea54bea8a227",
+            "sha256": "b157e3719393d545d6bd1264de51d2e0687339e0f02b737a735c0629e5b1dab0"
+        }
+    },
+    {
+        "name": "bosh-azure-hyperv-ubuntu-jammy-go_agent",
+        "version": "1.379",
+        "regular": {
+            "url": "https://storage.googleapis.com/bosh-core-stemcells/1.379/bosh-stemcell-1.379-azure-hyperv-ubuntu-jammy-go_agent.tgz",
+            "size": 1219533279,
+            "md5": "",
+            "sha1": "c3275e3c29514a419a3f707591d57db249b66bd6",
+            "sha256": "7af39b4a507254e3e3a6fc288950347a15d68ca0264f5d2aa35e2081410dc051"
+        }
+    },
+    {
+        "name": "bosh-azure-hyperv-ubuntu-jammy-go_agent",
+        "version": "1.360",
+        "regular": {
+            "url": "https://storage.googleapis.com/bosh-core-stemcells/1.360/bosh-stemcell-1.360-azure-hyperv-ubuntu-jammy-go_agent.tgz",
+            "size": 1218464351,
+            "md5": "",
+            "sha1": "501e2be796bc839d69b2fcb3e79952cb8380e045",
+            "sha256": "6e777d781f470c6ba0ef3a040eb1da7c0187a8ad6fc4258710dbfe31f92f7df9"
+        }
+    },
+    {
+        "name": "bosh-azure-hyperv-ubuntu-jammy-go_agent",
+        "version": "1.351",
+        "regular": {
+            "url": "https://storage.googleapis.com/bosh-core-stemcells/1.351/bosh-stemcell-1.351-azure-hyperv-ubuntu-jammy-go_agent.tgz",
+            "size": 1208344802,
+            "md5": "",
+            "sha1": "410609346c4799c62f8b2776eab0536d24010083",
+            "sha256": "97118181202b4c7c0c1c1d237458abd1b0b0dac4bba65da97cb3b0fe392a7e6d"
+        }
+    },
+    {
+        "name": "bosh-azure-hyperv-ubuntu-jammy-go_agent",
+        "version": "1.340",
+        "regular": {
+            "url": "https://storage.googleapis.com/bosh-core-stemcells/1.340/bosh-stemcell-1.340-azure-hyperv-ubuntu-jammy-go_agent.tgz",
+            "size": 1202600230,
+            "md5": "",
+            "sha1": "dd66527123be5c1dda88d0551df3d7e86255f2be",
+            "sha256": "36ec0987b2f0cfabe28cfd4d05b5868e35f989f2be0a80c265865e3496297ab2"
+        }
+    },
+    {
+        "name": "bosh-azure-hyperv-ubuntu-jammy-go_agent",
+        "version": "1.329",
+        "regular": {
+            "url": "https://storage.googleapis.com/bosh-core-stemcells/1.329/bosh-stemcell-1.329-azure-hyperv-ubuntu-jammy-go_agent.tgz",
+            "size": 1194060218,
+            "md5": "",
+            "sha1": "bcbfa5ad2817b0f9b23871703aa113fcfecc8d02",
+            "sha256": "6e28d1d59baed47c5361b4ad3af6fdf3fa18327142fd99369e398ad19a16fd71"
+        }
+    },
+    {
+        "name": "bosh-azure-hyperv-ubuntu-jammy-go_agent",
+        "version": "1.327",
+        "regular": {
+            "url": "https://storage.googleapis.com/bosh-core-stemcells/1.327/bosh-stemcell-1.327-azure-hyperv-ubuntu-jammy-go_agent.tgz",
+            "size": 1194013116,
+            "md5": "",
+            "sha1": "f27aedc7dd81ed19d354724303deab914f8cb5be",
+            "sha256": "dbcb457a8365831ff4e1e71de7314857d0e59a37c0ac5094e434dcb4078d842d"
+        }
+    },
+    {
+        "name": "bosh-azure-hyperv-ubuntu-jammy-go_agent",
+        "version": "1.318",
+        "regular": {
+            "url": "https://storage.googleapis.com/bosh-core-stemcells/1.318/bosh-stemcell-1.318-azure-hyperv-ubuntu-jammy-go_agent.tgz",
+            "size": 1193796727,
+            "md5": "",
+            "sha1": "8b772c1c21eb4a58e8fbc9c133cec73cfb9a34ec",
+            "sha256": "06163c502764cd7b8c0d6ad225f775c07c1ecceee21fa7dcb94e37f6da07c392"
+        }
+    },
+    {
+        "name": "bosh-azure-hyperv-ubuntu-jammy-go_agent",
+        "version": "1.309",
+        "regular": {
+            "url": "https://storage.googleapis.com/bosh-core-stemcells/1.309/bosh-stemcell-1.309-azure-hyperv-ubuntu-jammy-go_agent.tgz",
+            "size": 1191435824,
+            "md5": "",
+            "sha1": "208e4aebd4fef692339f88a8e3e459cd334baa7f",
+            "sha256": "3203d9785126cb356d4a1e3a8c538dcbbfab6c7a38a2e166aed84ab307e6c6b7"
+        }
+    },
+    {
+        "name": "bosh-azure-hyperv-ubuntu-jammy-go_agent",
+        "version": "1.301",
+        "regular": {
+            "url": "https://storage.googleapis.com/bosh-core-stemcells/1.301/bosh-stemcell-1.301-azure-hyperv-ubuntu-jammy-go_agent.tgz",
+            "size": 1191051960,
+            "md5": "",
+            "sha1": "553a1fa88b2d68befa304206a8cd4cf3cab96b55",
+            "sha256": "5bb01e1e8fc3daaa112eb91eae9ebb661e58bb038da7e045e3b32739740c4998"
+        }
+    },
+    {
+        "name": "bosh-azure-hyperv-ubuntu-jammy-go_agent",
+        "version": "1.298",
+        "regular": {
+            "url": "https://storage.googleapis.com/bosh-core-stemcells/1.298/bosh-stemcell-1.298-azure-hyperv-ubuntu-jammy-go_agent.tgz",
+            "size": 1186892268,
+            "md5": "",
+            "sha1": "af4f99cf346397cc419b14a89379132969ebcdc4",
+            "sha256": "80d226e1245b56d73559e4c311c290ab1adea182e2ac5cfe193b01d10d318490"
+        }
+    },
+    {
+        "name": "bosh-azure-hyperv-ubuntu-jammy-go_agent",
+        "version": "1.289",
+        "regular": {
+            "url": "https://storage.googleapis.com/bosh-core-stemcells/1.289/bosh-stemcell-1.289-azure-hyperv-ubuntu-jammy-go_agent.tgz",
+            "size": 1186491359,
+            "md5": "",
+            "sha1": "1631d6c0f8d6c69d66a960af77482ea3299277e3",
+            "sha256": "29a2ccb15a333c3afe767f7a44cda987b268232125bfd4d6fe6a117193da725f"
+        }
+    },
+    {
+        "name": "bosh-azure-hyperv-ubuntu-jammy-go_agent",
+        "version": "1.260",
+        "regular": {
+            "url": "https://storage.googleapis.com/bosh-core-stemcells/1.260/bosh-stemcell-1.260-azure-hyperv-ubuntu-jammy-go_agent.tgz",
+            "size": 1186217038,
+            "md5": "",
+            "sha1": "4b6361a1875351d94651c06d0e4ce26ab4e629d9",
+            "sha256": "1b3bbc5439d66473964e04c899f6d75ed5ce8621ba6973ce4eea535efb4c0b18"
+        }
+    },
+    {
+        "name": "bosh-azure-hyperv-ubuntu-jammy-go_agent",
+        "version": "1.250",
+        "regular": {
+            "url": "https://storage.googleapis.com/bosh-core-stemcells/1.250/bosh-stemcell-1.250-azure-hyperv-ubuntu-jammy-go_agent.tgz",
+            "size": 1186318192,
+            "md5": "",
+            "sha1": "bd63422567d0ee76124cfc1554c3774cc0bf3936",
+            "sha256": "5fe7460ae2d1b8eb1db4480b438dc1943efb5dae0c7917d31f9ba80a07370dae"
+        }
+    },
+    {
+        "name": "bosh-azure-hyperv-ubuntu-jammy-go_agent",
+        "version": "1.232",
+        "regular": {
+            "url": "https://storage.googleapis.com/bosh-core-stemcells/1.232/bosh-stemcell-1.232-azure-hyperv-ubuntu-jammy-go_agent.tgz",
+            "size": 1184948218,
+            "md5": "",
+            "sha1": "b432f5222aa7bf071c1ec161e0568f070eddd108",
+            "sha256": "54b38c4e0fe9962b713df745bdd3a21c22a68923eace277dcf76b33e13113452"
+        }
+    },
+    {
+        "name": "bosh-azure-hyperv-ubuntu-jammy-go_agent",
+        "version": "1.222",
+        "regular": {
+            "url": "https://storage.googleapis.com/bosh-core-stemcells/1.222/bosh-stemcell-1.222-azure-hyperv-ubuntu-jammy-go_agent.tgz",
+            "size": 1185306770,
+            "md5": "",
+            "sha1": "59c9cfdd2cc58e2d3097e6dbf0cf3e83555c8cea",
+            "sha256": "482bf12a657cf2d6155d034071b2b5466d304810e9c59b35d0ad55051298e969"
+        }
+    },
+    {
+        "name": "bosh-azure-hyperv-ubuntu-jammy-go_agent",
+        "version": "1.207",
+        "regular": {
+            "url": "https://storage.googleapis.com/bosh-core-stemcells/1.207/bosh-stemcell-1.207-azure-hyperv-ubuntu-jammy-go_agent.tgz",
+            "size": 1243575003,
+            "md5": "",
+            "sha1": "154a2fe456a1e6eb5aea34911253811acb9e8195",
+            "sha256": "b8a0318c3dd3ca1730d7f43b6d10097d5e26572a5c0b0c65f2ca02f64d48ce80"
+        }
+    },
+    {
+        "name": "bosh-azure-hyperv-ubuntu-jammy-go_agent",
+        "version": "1.199",
+        "regular": {
+            "url": "https://storage.googleapis.com/bosh-core-stemcells/1.199/bosh-stemcell-1.199-azure-hyperv-ubuntu-jammy-go_agent.tgz",
+            "size": 1242794346,
+            "md5": "",
+            "sha1": "15948eeaa4f012881732fc60b71680ad74ec2ca2",
+            "sha256": "a851b93029df99d08be285d6363d7247e3eed791d2ecaacca638a743c21dd1c6"
+        }
+    },
+    {
+        "name": "bosh-azure-hyperv-ubuntu-jammy-go_agent",
+        "version": "1.181",
+        "regular": {
+            "url": "https://storage.googleapis.com/bosh-core-stemcells/1.181/bosh-stemcell-1.181-azure-hyperv-ubuntu-jammy-go_agent.tgz",
+            "size": 1195648766,
+            "md5": "",
+            "sha1": "295970e7852d0094e78644202cf666f34978cfda",
+            "sha256": "c8533f20247cd8f07d6027b337c11ae6a33c69fe71edeaa272648aded808b56a"
+        }
+    },
+    {
+        "name": "bosh-azure-hyperv-ubuntu-jammy-go_agent",
+        "version": "1.179",
+        "regular": {
+            "url": "https://storage.googleapis.com/bosh-core-stemcells/1.179/bosh-stemcell-1.179-azure-hyperv-ubuntu-jammy-go_agent.tgz",
+            "size": 1195609075,
+            "md5": "",
+            "sha1": "adb56e7eaab00f9f40f49927acff192801c5333c",
+            "sha256": "88aad1170f7fa6f502a618219ba98a2e3f525ba418029e5c099c711652979c46"
+        }
+    },
+    {
+        "name": "bosh-azure-hyperv-ubuntu-jammy-go_agent",
+        "version": "1.148",
+        "regular": {
+            "url": "https://storage.googleapis.com/bosh-core-stemcells/1.148/bosh-stemcell-1.148-azure-hyperv-ubuntu-jammy-go_agent.tgz",
+            "size": 1194941347,
+            "md5": "",
+            "sha1": "bfffdb19a7caeb838135a2fc294dd09a6c820fb5",
+            "sha256": "3cbd6e0581736b5e7d9f653f633567e1f1ca9c97408050a6ac529490bc167c66"
+        }
+    }
+]

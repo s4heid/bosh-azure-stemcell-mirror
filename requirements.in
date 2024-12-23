@@ -1,0 +1,6 @@
+azure-functions
+azure-mgmt-compute
+azure-identity
+azure-storage-blob
+requests
+semver
