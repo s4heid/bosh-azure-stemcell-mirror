@@ -1,13 +1,13 @@
 import logging
 import os
 import shutil
-from typing import Optional, List
 import requests
 import tarfile
 import tempfile
 
+from typing import Optional, List
 from semver.version import Version
-from .azure_manager import AzureManager
+from azure_manager import AzureManager
 
 STEMCELL_API_URL = "https://bosh.io/api/v1/stemcells/"
 

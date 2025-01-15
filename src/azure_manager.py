@@ -1,21 +1,20 @@
 import os
 import uuid
 import logging
+
 from azure.core.exceptions import ResourceNotFoundError, HttpResponseError
 from azure.mgmt.compute import ComputeManagementClient
 from azure.mgmt.compute.models import GalleryImage, GalleryImageIdentifier
 from azure.storage.blob import BlobServiceClient, ContainerClient
+from azure.identity import DefaultAzureCredential, AzureAuthorityHosts
 from typing import Optional
-from azure.identity import ClientSecretCredential, AzureAuthorityHosts
 
 
 class AzureManager:
     def __init__(
         self,
-        client_id: str,
-        client_secret: str,
-        tenant_id: str,
         subscription_id: str,
+        client_id: str,
         resource_group: str,
         location: str,
         logger: Optional[logging.Logger] = None
@@ -23,10 +22,8 @@ class AzureManager:
         self.subscription_id: str = subscription_id
         self.resource_group: str = resource_group
         self.location: str = location
-        self.credential: ClientSecretCredential = ClientSecretCredential(
-            tenant_id=tenant_id,
-            client_id=client_id,
-            client_secret=client_secret,
+        self.credential: DefaultAzureCredential = DefaultAzureCredential(
+            managed_identity_client_id=client_id,
             authority=AzureAuthorityHosts.AZURE_PUBLIC_CLOUD
         )
         self.compute_client: ComputeManagementClient = ComputeManagementClient(self.credential, subscription_id)
