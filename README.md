@@ -10,6 +10,10 @@ This repository contains an Azure Function that mirrors BOSH stemcells from [bos
   - `Gallery Image Contributor` on the gallery
   - `Contributor` on the resource group
 
+## Deployment
+
+First, log-in to your Azure subscription using `azd auth login`. Run `azd up` to provision your infrastructure and deploy to Azure (or run `azd provision` then `azd deploy` to accomplish the tasks separately).
+
 ## Development
 
 ### Run the unit tests

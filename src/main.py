@@ -6,7 +6,7 @@ from azure_manager import AzureManager
 from stemcell_mirror import StemcellMirror
 
 subscription_id: str = os.environ["AZURE_SUBSCRIPTION_ID"]
-managed_identity_client_id: str = os.environ.get("AZURE_MANAGED_IDENTITY_CLIENT_ID")
+managed_identity_client_id: str = os.environ.get("AZURE_CLIENT_ID")
 resource_group: str = os.environ["AZURE_RESOURCE_GROUP"]
 location: str = os.environ.get("AZURE_REGION", "eastus")
 storage_account_name: str = os.environ["BASM_STORAGE_ACCOUNT_NAME"]
