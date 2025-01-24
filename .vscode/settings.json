@@ -16,9 +16,9 @@
             "dockerfilePath": "Dockerfile",
             "srcPath": ".",
             "envPath": ".env",
-            "resourceGroup": "boshstemcells",
+            "resourceGroup": "${env:AZURE_RESOURCE_GROUP}",
             "containerApp": "mirror",
-            "containerRegistry": "boshstemcells4f3436"
+            "containerRegistry": "${env:AZURE_CONTAINER_REGISTRY_ENDPOINT}"
         }
     ]
 }

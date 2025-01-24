@@ -15,7 +15,7 @@ class StemcellMirror:
     def __init__(
         self,
         azure_manager: AzureManager,
-        extraction_directory: str = tempfile.gettempdir(),
+        extraction_directory: str = "",
         logger: Optional[logging.Logger] = None
     ) -> None:
         self.azure_manager: AzureManager = azure_manager
@@ -143,6 +143,10 @@ class StemcellMirror:
         Returns:
             str: The path to the temporary extraction directory.
         """
-        if os.path.exists(self.extraction_directory) and os.access(self.extraction_directory, os.W_OK):
-            return tempfile.mkdtemp(prefix="stemcell-", dir=self.extraction_directory)
-        raise RuntimeError(f"Failed to create tmp directory at path {self.extraction_directory}")
+        mount_dir = self.extraction_directory
+        if mount_dir and os.path.exists(mount_dir) and os.access(mount_dir, os.W_OK):
+            self.logger.info(f"Using mounted directory {mount_dir} for extraction.")
+            return tempfile.mkdtemp(prefix="stemcell-", dir=mount_dir)
+
+        self.logger.warning(f"'{mount_dir}' is not writable or does not exist. Falling back to system temp.")
+        return tempfile.mkdtemp(prefix="stemcell-")

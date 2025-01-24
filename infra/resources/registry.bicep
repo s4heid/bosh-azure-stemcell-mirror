@@ -3,7 +3,6 @@ param location string = resourceGroup().location
 param tags object = {}
 
 // param principalId string
-
 // module containerRegistry 'br/public:avm/res/container-registry/registry:0.1.1' = {
 //   name: 'registry'
 //   params: {
@@ -27,7 +26,7 @@ param tags object = {}
 //   }
 // }
 
-resource containerRegistry 'Microsoft.ContainerRegistry/registries@2023-07-01' = {
+resource containerRegistry 'Microsoft.ContainerRegistry/registries@2023-01-01-preview' = {
   name: name
   location: location
   tags: tags
@@ -36,6 +35,7 @@ resource containerRegistry 'Microsoft.ContainerRegistry/registries@2023-07-01' =
   }
   properties: {
     adminUserEnabled: true
+    anonymousPullEnabled: false
     dataEndpointEnabled: false
     encryption: {
       status: 'disabled'
@@ -47,4 +47,4 @@ resource containerRegistry 'Microsoft.ContainerRegistry/registries@2023-07-01' =
 }
 
 output name string = containerRegistry.name
-output registryEndpoint string = containerRegistry.properties.loginServer
+output loginServer string = containerRegistry.properties.loginServer

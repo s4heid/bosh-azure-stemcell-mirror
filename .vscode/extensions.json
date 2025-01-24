@@ -1,6 +1,9 @@
 {
   "recommendations": [
+    "ms-azuretools.azure-dev",
     "ms-azuretools.vscode-azurecontainerapps",
+    "ms-azuretools.vscode-azureresourcegroups",
+    "ms-azuretools.vscode-bicep",
     "ms-python.python"
   ]
 }
