@@ -13,9 +13,6 @@ param srcExists bool
 @secure()
 param srcDefinition object
 
-// @description('Id of the user or app to assign application roles')
-// param principalId string
-
 var tags = {
   'azd-env-name': environmentName
 }
@@ -40,17 +37,6 @@ module monitoring 'resources/monitoring.bicep' = {
   }
   scope: rg
 }
-
-// module keyVault 'resources/keyvault.bicep' = {
-//   name: 'keyvault'
-//   params: {
-//     location: location
-//     tags: tags
-//     name: '${abbrs.keyVaultVaults}${resourceToken}'
-//     principalId: principalId
-//   }
-//   scope: rg
-// }
 
 module containerRegistry 'resources/registry.bicep' = {
   name: 'registry'
@@ -116,6 +102,3 @@ module app 'app/app.bicep' = {
 output AZURE_CONTAINER_REGISTRY_ENDPOINT string = containerRegistry.outputs.loginServer
 output AZURE_CONTAINER_REGISTRY_MANAGED_IDENTITY_ID string = app.outputs.identityClientId
 output AZURE_CONTAINER_APPS_ENVIRONMENT_ID string = appsEnvironment.outputs.id
-
-// output AZURE_KEY_VAULT_NAME string = keyVault.outputs.name
-// output AZURE_KEY_VAULT_ENDPOINT string = keyVault.outputs.endpoint

@@ -2,9 +2,8 @@ FROM python:3.11-slim-buster
 
 WORKDIR /app
 
-COPY ./src /app
-
-COPY requirements.txt /app/requirements.txt
+COPY ./src /app/src
+COPY ./requirements.txt /app/
 
 RUN apt-get update && apt-get install -y \
     build-essential \
@@ -17,4 +16,4 @@ RUN useradd -m vcap \
 
 USER vcap
 
-ENTRYPOINT ["python", "main.py"]
+ENTRYPOINT ["python", "src/main.py"]

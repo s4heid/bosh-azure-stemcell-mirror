@@ -5,7 +5,7 @@ import requests
 import unittest
 
 from unittest.mock import patch, MagicMock
-from src.stemcell_mirror import StemcellMirror
+from src.mirror.stemcell_mirror import StemcellMirror
 
 tmp_dir = os.path.join("tests", "tmp")
 
@@ -25,7 +25,7 @@ class TestStemcellMirror(unittest.TestCase):
     def tearDown(self):
         shutil.rmtree(tmp_dir)
 
-    @patch("src.stemcell_mirror.StemcellMirror._download_stemcell")
+    @patch("src.mirror.stemcell_mirror.StemcellMirror._download_stemcell")
     @patch("requests.get")
     def test_run_with_stemcell_resources(self, mock_requests_get, mock_download_stemcell):
         mock_response_api = MagicMock()

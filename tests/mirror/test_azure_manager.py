@@ -6,11 +6,11 @@ from azure.core.exceptions import ResourceNotFoundError
 from azure.storage.blob import BlobServiceClient, ContainerClient
 from azure.mgmt.compute.models import GalleryImageVersion
 from azure.mgmt.compute import ComputeManagementClient
-from src.azure_manager import AzureManager
+from src.mirror.azure_manager import AzureManager
 
 class TestAzureManager(unittest.TestCase):
-    @patch("src.azure_manager.DefaultAzureCredential")
-    @patch("src.azure_manager.ComputeManagementClient")
+    @patch("src.mirror.azure_manager.DefaultAzureCredential")
+    @patch("src.mirror.azure_manager.ComputeManagementClient")
     def setUp(self, mock_compute_client, mock_credential) -> None:
         self.mock_logger = MagicMock()
         self.manager = AzureManager(
@@ -22,7 +22,7 @@ class TestAzureManager(unittest.TestCase):
         )
         self.mock_compute_client = mock_compute_client
 
-    @patch("src.azure_manager.BlobServiceClient")
+    @patch("src.mirror.azure_manager.BlobServiceClient")
     def test_setup_storage(self, mock_blob_service_client: BlobServiceClient) -> None:
         mock_container_client: ContainerClient = make_mock_container_client(mock_blob_service_client, exists=False)
 
@@ -32,7 +32,7 @@ class TestAzureManager(unittest.TestCase):
         self.assertEqual(self.manager.storage_container, "testcontainer123")
         mock_container_client.create_container.assert_called_once()
 
-    @patch("src.azure_manager.BlobServiceClient")
+    @patch("src.mirror.azure_manager.BlobServiceClient")
     def test_upload_vhd(self, mock_blob_service_client: BlobServiceClient) -> None:
         mock_container_client: ContainerClient = make_mock_container_client(mock_blob_service_client)
         self.manager.setup_storage("teststorage", "testcontainer")

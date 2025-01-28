@@ -2,8 +2,8 @@ import os
 import sys
 import logging
 
-from azure_manager import AzureManager
-from stemcell_mirror import StemcellMirror
+from mirror.azure_manager import AzureManager
+from mirror.stemcell_mirror import StemcellMirror
 
 subscription_id: str = os.environ["AZURE_SUBSCRIPTION_ID"]
 managed_identity_client_id: str = os.environ.get("AZURE_CONTAINER_REGISTRY_MANAGED_IDENTITY_ID")
