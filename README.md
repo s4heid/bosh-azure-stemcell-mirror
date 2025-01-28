@@ -2,6 +2,30 @@
 
 This repository contains an Azure Function that mirrors BOSH stemcells from [bosh.io](https://bosh.io/stemcells) to an [Azure Compute Gallery](https://learn.microsoft.com/en-us/azure/virtual-machines/azure-compute-gallery) of your choice.
 
+## Architecture
+
+```mermaid
+sequenceDiagram
+    participant User
+    participant StemcellMirror as StemcellMirror.run()
+    participant BoshIO as bosh.io
+    participant Storage as Azure Storage Account
+    participant Gallery as Azure Compute Gallery
+
+    User->>StemcellMirror: Invoke
+    StemcellMirror->>Gallery: gallery_image_version_exists?
+    alt VersionExists
+        StemcellMirror->>User: No new stemcell required
+    else NoVersionFound
+        StemcellMirror->>BoshIO: Download latest stemcell (tgz)
+        StemcellMirror->>StemcellMirror: Extract .vhd from tgz
+        StemcellMirror->>Storage: Upload root.vhd
+        StemcellMirror->>Gallery: check_or_create_gallery_image
+        StemcellMirror->>Gallery: create_gallery_image_version
+    end
+    StemcellMirror->>User: Completed stemcell check
+```
+
 ## Deployment
 
 1. Get an Azure Subscription
