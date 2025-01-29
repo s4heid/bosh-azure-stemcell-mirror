@@ -138,7 +138,7 @@ resource app 'Microsoft.App/containerApps@2024-03-01' = {
     template: {
       containers: [
         {
-          image: fetchLatestImage.outputs.?containers[?0].?image ?? 'mcr.microsoft.com/azuredocs/containerapps-helloworld:latest'
+          image: fetchLatestImage.outputs.?containers[?0].?image ?? 'ghcr.io/s4heid/bosh-azure-stemcell-mirror:latest'
           name: 'mirror'
           env: union(
             [
