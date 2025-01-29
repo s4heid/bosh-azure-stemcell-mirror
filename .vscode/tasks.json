@@ -7,6 +7,9 @@
 			"osx": {
 				"command": "python -m pip install -r requirements.txt"
 			},
+			"linux": {
+				"command": "python -m pip install -r requirements.txt"
+			},
 			"problemMatcher": []
 		}
 	]

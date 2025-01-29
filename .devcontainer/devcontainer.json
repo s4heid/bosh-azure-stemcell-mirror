@@ -1,0 +1,31 @@
+{
+    "name": "stemcell-mirror-devcontainer",
+    "image": "mcr.microsoft.com/devcontainers/python:3.11-bullseye",
+    "features": {
+        // https://containers.dev/features
+        "ghcr.io/devcontainers/features/docker-in-docker:2": {},
+        "ghcr.io/devcontainers/features/azure-cli:1": {
+            "version": "latest"
+        },
+        "ghcr.io/azure/azure-dev/azd:latest": {}
+    },
+    "customizations": {
+        "vscode": {
+            "extensions": [
+                "GitHub.vscode-github-actions",
+                "ms-azuretools.azure-dev",
+                "ms-azuretools.vscode-azurecontainerapps",
+                "ms-azuretools.vscode-azureresourcegroups",
+                "ms-azuretools.vscode-bicep",
+                "ms-azuretools.vscode-docker",
+                "ms-python.python"
+            ]
+        }
+    },
+    "forwardPorts": [],
+    "postCreateCommand": "python -m pip install -r requirements.txt",
+    "remoteUser": "vscode",
+    "hostRequirements": {
+        "memory": "8gb"
+    }
+}

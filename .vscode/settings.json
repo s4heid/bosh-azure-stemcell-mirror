@@ -9,16 +9,5 @@
     ],
     "python.testing.pytestEnabled": false,
     "python.testing.unittestEnabled": true,
-    "containerApps.deploymentConfigurations": [
-        {
-            "label": "mirror",
-            "type": "AcrDockerBuildRequest",
-            "dockerfilePath": "Dockerfile",
-            "srcPath": ".",
-            "envPath": ".env",
-            "resourceGroup": "${env:AZURE_RESOURCE_GROUP}",
-            "containerApp": "mirror",
-            "containerRegistry": "${env:AZURE_CONTAINER_REGISTRY_ENDPOINT}"
-        }
-    ]
+    "containerApps.deploymentConfigurations": []
 }
