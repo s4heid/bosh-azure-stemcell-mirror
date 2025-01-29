@@ -31,6 +31,8 @@ sequenceDiagram
 
 ## Deployment
 
+[![Deploy to Azure](https://aka.ms/deploytoazurebutton)](https://portal.azure.com/#create/Microsoft.Template/uri/https%3A%2F%2Fraw.githubusercontent.com%2Fs4heid%2Fbosh-azure-stemcell-mirror%2Frefs%2Fheads%2Fmain%2Fazdeploy.json)
+
 1. Get an Azure Subscription
 2. Log-in to your Azure subscription using `azd auth login`.
 3. Run `azd up` to provision your infrastructure and deploy to Azure (or run `azd provision` then `azd deploy` to accomplish the tasks separately).
