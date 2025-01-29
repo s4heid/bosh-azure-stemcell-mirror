@@ -27,20 +27,20 @@ if __name__ == "__main__":
     az_logger.setLevel(logging.WARN)
     az_logger.addHandler(handler)
 
-    app_logger.info('Setting up Azure Manager...')
+    app_logger.info("Setting up Azure Manager...")
 
     azure_manager: AzureManager = AzureManager(
         subscription_id=subscription_id,
         client_id=managed_identity_client_id,
         resource_group=resource_group,
         location=location,
-        logger=app_logger
+        logger=app_logger,
     )
     azure_manager.setup_storage(storage_account_name, storage_container)
 
-    app_logger.info('Starting stemcell mirror run...')
+    app_logger.info("Starting stemcell mirror run...")
 
     mirror: StemcellMirror = StemcellMirror(azure_manager, mounted_dir, logger=app_logger)
     mirror.run(stemcell_series, gallery_name, gallery_image_name)
 
-    app_logger.info('Completed stemcell mirror run.')
+    app_logger.info("Completed stemcell mirror run.")

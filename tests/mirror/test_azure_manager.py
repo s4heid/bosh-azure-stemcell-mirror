@@ -8,6 +8,7 @@ from azure.mgmt.compute.models import GalleryImageVersion
 from azure.mgmt.compute import ComputeManagementClient
 from src.mirror.azure_manager import AzureManager
 
+
 class TestAzureManager(unittest.TestCase):
     @patch("src.mirror.azure_manager.DefaultAzureCredential")
     @patch("src.mirror.azure_manager.ComputeManagementClient")
@@ -18,7 +19,7 @@ class TestAzureManager(unittest.TestCase):
             client_id="test-client-id",
             resource_group="test-rg",
             location="test-location",
-            logger=self.mock_logger
+            logger=self.mock_logger,
         )
         self.mock_compute_client = mock_compute_client
 
@@ -47,11 +48,14 @@ class TestAzureManager(unittest.TestCase):
             data=unittest.mock.ANY,
             overwrite=True,
             blob_type="PageBlob",
-            max_concurrency=unittest.mock.ANY
+            max_concurrency=unittest.mock.ANY,
         )
         self.assertTrue(
-            any(call.args[0].startswith("Uploaded VHD to blob: bosh-stemcell-") for call in self.mock_logger.info.mock_calls),
-            "Expected log message starting with 'Uploaded VHD to blob: '"
+            any(
+                call.args[0].startswith("Uploaded VHD to blob: bosh-stemcell-")
+                for call in self.mock_logger.info.mock_calls
+            ),
+            "Expected log message starting with 'Uploaded VHD to blob: '",
         )
 
     def test_upload_vhd_no_storage_config_raises(self):
@@ -60,12 +64,7 @@ class TestAzureManager(unittest.TestCase):
 
     def test_check_or_create_gallery_image_exists(self):
         self.mock_compute_client.return_value.gallery_images.get.return_value = GalleryImageVersion(
-            id="test",
-            location="test",
-            tags={},
-            os_type="test",
-            os_state="test",
-            publishing_profile=None
+            id="test", location="test", tags={}, os_type="test", os_state="test", publishing_profile=None
         )
 
         self.manager.check_or_create_gallery_image("series", "gallery", "img")
@@ -83,22 +82,18 @@ class TestAzureManager(unittest.TestCase):
             resource_group_name="test-rg",
             gallery_name="gallery",
             gallery_image_name="img",
-            gallery_image=unittest.mock.ANY
+            gallery_image=unittest.mock.ANY,
         )
 
     def test_gallery_image_version_exists_true(self):
         self.mock_compute_client.return_value.gallery_images.get.return_value = GalleryImageVersion(
-            id="test",
-            location="test",
-            tags={},
-            os_type="test",
-            os_state="test",
-            publishing_profile=None
+            id="test", location="test", tags={}, os_type="test", os_state="test", publishing_profile=None
         )
 
         result = self.manager.gallery_image_version_exists("gallery", "img", "ver")
 
         self.assertTrue(result)
+
 
 def make_mock_container_client(blob_service_client: ComputeManagementClient, exists: bool = True) -> ContainerClient:
     mock_container_client = MagicMock()
@@ -107,5 +102,6 @@ def make_mock_container_client(blob_service_client: ComputeManagementClient, exi
     blob_service_client.return_value.get_container_client.return_value = mock_container_client
     return mock_container_client
 
-if __name__ == '__main__':
+
+if __name__ == "__main__":
     unittest.main()

@@ -11,23 +11,16 @@ from .azure_manager import AzureManager
 
 STEMCELL_API_URL = "https://bosh.io/api/v1/stemcells/"
 
+
 class StemcellMirror:
     def __init__(
-        self,
-        azure_manager: AzureManager,
-        extraction_directory: str = "",
-        logger: Optional[logging.Logger] = None
+        self, azure_manager: AzureManager, extraction_directory: str = "", logger: Optional[logging.Logger] = None
     ) -> None:
         self.azure_manager: AzureManager = azure_manager
         self.extraction_directory: str = extraction_directory
         self.logger: logging.Logger = logger or logging.getLogger(__name__)
 
-    def run(
-        self,
-        stemcell_series: str,
-        gallery_name: str,
-        gallery_image_name: str
-    ) -> None:
+    def run(self, stemcell_series: str, gallery_name: str, gallery_image_name: str) -> None:
         """
         Mirrors the latest stemcell from the given stemcell series to Azure.
 
@@ -54,9 +47,7 @@ class StemcellMirror:
             raise ValueError("Failed to find download URL for stemcell.")
 
         version_exists: bool = self.azure_manager.gallery_image_version_exists(
-            gallery_name,
-            gallery_image_name,
-            formatted_latest_version
+            gallery_name, gallery_image_name, formatted_latest_version
         )
         if version_exists:
             self.logger.info("No new stemcell to upload.")
@@ -79,10 +70,7 @@ class StemcellMirror:
 
             self.logger.info(f"Creating new gallery image version {formatted_latest_version}...")
             self.azure_manager.create_gallery_image_version(
-                gallery_name,
-                gallery_image_name,
-                formatted_latest_version,
-                blob_uri
+                gallery_name, gallery_image_name, formatted_latest_version, blob_uri
             )
 
             self.logger.info("Completed vhd upload and gallery image version creation.")

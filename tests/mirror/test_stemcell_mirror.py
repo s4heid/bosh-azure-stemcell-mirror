@@ -9,6 +9,7 @@ from src.mirror.stemcell_mirror import StemcellMirror
 
 tmp_dir = os.path.join("tests", "tmp")
 
+
 class TestStemcellMirror(unittest.TestCase):
 
     def setUp(self):
@@ -40,14 +41,10 @@ class TestStemcellMirror(unittest.TestCase):
         self.mirror.run("bosh-azure-hyperv-ubuntu-jammy-go_agent", "test-gallery", "test-image")
 
         self.mock_azure_manager.gallery_image_version_exists.assert_called_once_with(
-            "test-gallery",
-            "test-image",
-            "1.682.0"
+            "test-gallery", "test-image", "1.682.0"
         )
         self.mock_azure_manager.check_or_create_gallery_image.assert_called_once_with(
-            "bosh-azure-hyperv-ubuntu-jammy-go_agent",
-            "test-gallery",
-            "test-image"
+            "bosh-azure-hyperv-ubuntu-jammy-go_agent", "test-gallery", "test-image"
         )
         self.mock_azure_manager.upload_vhd.assert_called_once_with(os.path.join(tmp_dir, "root.vhd"))
         self.mock_azure_manager.create_gallery_image_version.assert_called_once()
@@ -56,12 +53,7 @@ class TestStemcellMirror(unittest.TestCase):
     def test_run_with_existing_version(self, mock_requests_get):
         mock_response = MagicMock()
         mock_response.status_code = 200
-        mock_response.json.return_value = [
-            {
-                "version": "1.682.0",
-                "regular": {"url": "https://fake-url/stemcell.tgz"}
-            }
-        ]
+        mock_response.json.return_value = [{"version": "1.682.0", "regular": {"url": "https://fake-url/stemcell.tgz"}}]
         mock_response.raise_for_status = MagicMock()
         mock_requests_get.return_value = mock_response
         self.mock_azure_manager.gallery_image_version_exists.return_value = True
@@ -69,9 +61,7 @@ class TestStemcellMirror(unittest.TestCase):
         self.mirror.run("ubuntu-jammy", "test-gallery", "test-image")
 
         self.mock_azure_manager.gallery_image_version_exists.assert_called_once_with(
-            "test-gallery",
-            "test-image",
-            "1.682.0"
+            "test-gallery", "test-image", "1.682.0"
         )
         self.mock_azure_manager.check_or_create_gallery_image.assert_not_called()
         self.mock_azure_manager.upload_vhd.assert_not_called()
@@ -109,5 +99,6 @@ class TestStemcellMirror(unittest.TestCase):
         self.mock_azure_manager.upload_vhd.assert_not_called()
         self.mock_azure_manager.create_gallery_image_version.assert_not_called()
 
-if __name__ == '__main__':
+
+if __name__ == "__main__":
     unittest.main()
