@@ -101,4 +101,10 @@ module app 'app/app.bicep' = {
 // `azd deploy` uses this endpoint to push images to the container registry
 output AZURE_CONTAINER_REGISTRY_ENDPOINT string = containerRegistry.outputs.loginServer
 output AZURE_CONTAINER_REGISTRY_MANAGED_IDENTITY_ID string = app.outputs.identityClientId
+output AZURE_CONTAINER_APPS_JOB_NAME string = app.outputs.name
 output AZURE_CONTAINER_APPS_ENVIRONMENT_ID string = appsEnvironment.outputs.id
+output AZD_IS_PROVISIONED bool = true
+
+output AZURE_TENANT_ID string = tenant().tenantId
+output AZURE_SUBSCRIPTION_ID string = subscription().subscriptionId
+output AZURE_RESOURCE_GROUP string = rg.name

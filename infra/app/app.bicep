@@ -107,102 +107,7 @@ module fetchLatestImage '../modules/fetch-container-image.bicep' = {
   }
 }
 
-resource app 'Microsoft.App/containerApps@2024-03-01' = {
-  name: name
-  location: location
-  tags: union(tags, { 'azd-service-name': 'bosh-azure-stemcell-mirror' })
-  dependsOn: [acrPullRole]
-  identity: {
-    type: 'UserAssigned'
-    userAssignedIdentities: {
-      '${identity.id}': {}
-    }
-  }
-  properties: {
-    managedEnvironmentId: containerAppsEnvironment.id
-    configuration: {
-      registries: [
-        {
-          server: containerRegistry.properties.loginServer
-          identity: identity.id
-        }
-      ]
-      secrets: union(
-        [],
-        map(secrets, secret => {
-          name: secret.secretRef
-          value: secret.value
-        })
-      )
-    }
-    template: {
-      containers: [
-        {
-          image: fetchLatestImage.outputs.?containers[?0].?image ?? 'ghcr.io/s4heid/bosh-azure-stemcell-mirror:latest'
-          name: 'mirror'
-          env: union(
-            [
-              {
-                name: 'APPLICATIONINSIGHTS_CONNECTION_STRING'
-                value: applicationInsights.properties.ConnectionString
-              }
-              {
-                name: 'AZURE_CONTAINER_REGISTRY_MANAGED_IDENTITY_ID'
-                value: identity.properties.clientId
-              }
-              {
-                name: 'AZURE_SUBSCRIPTION_ID'
-                value: subscription().subscriptionId
-              }
-              {
-                name: 'AZURE_REGION'
-                value: location
-              }
-              {
-                name: 'AZURE_RESOURCE_GROUP'
-                value: resourceGroup().name
-              }
-              {
-                name: 'BASM_STORAGE_ACCOUNT_NAME'
-                value: storageAccount.name
-              }
-              {
-                name: 'BASM_GALLERY_NAME'
-                value: gallery.name
-              }
-              {
-                name: 'BASM_GALLERY_IMAGE_NAME'
-                value: 'ubuntu-jammy'
-              }
-              {
-                name: 'BASM_STEMCELL_SERIES'
-                value: 'bosh-azure-hyperv-ubuntu-jammy-go_agent'
-              }
-            ],
-            env,
-            map(secrets, secret => {
-              name: secret.name
-              secretRef: secret.secretRef
-            })
-          )
-          resources: {
-            cpu: json('4.0')
-            memory: '8.0Gi'
-          }
-          volumeMounts: []
-        }
-      ]
-      scale: {
-        minReplicas: 0
-        maxReplicas: 1
-        rules: []
-      }
-      volumes: []
-    }
-  }
-}
-
-resource appJob 'Microsoft.App/jobs@2024-03-01' = {
+resource app 'Microsoft.App/jobs@2024-03-01' = {
   name: '${name}-job'
   location: location
   tags: union(tags, { 'azd-service-name': 'bosh-azure-stemcell-mirror-job' })
@@ -244,7 +149,7 @@ resource appJob 'Microsoft.App/jobs@2024-03-01' = {
     template: {
       containers: [
         {
-          image: fetchLatestImage.outputs.?containers[?0].?image ?? 'mcr.microsoft.com/azuredocs/containerapps-helloworld:latest'
+          image: fetchLatestImage.outputs.?containers[?0].?image ?? 'ghcr.io/s4heid/bosh-azure-stemcell-mirror:main'
           name: 'mirror-daily'
           env: union(
             [

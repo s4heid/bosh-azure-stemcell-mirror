@@ -3,10 +3,19 @@
 name: bosh-azure-stemcell-mirror
 metadata:
     template: azd-init@1.11.0
-services:
-    bosh-azure-stemcell-mirror:
-        project: .
-        host: containerapp
-        language: python
-        docker:
-            path: Dockerfile
+# services:
+#     bosh-azure-stemcell-mirror:
+#         project: .
+#         host: containerapp
+#         language: python
+#         docker:
+#             path: Dockerfile
+
+# Workaround for https://github.com/Azure/azure-dev/issues/2743
+hooks:
+    postprovision:
+        posix:
+            shell: sh
+            continueOnError: false
+            interactive: true
+            run: ./scripts/deploy.sh

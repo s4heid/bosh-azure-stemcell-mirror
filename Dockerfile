@@ -1,4 +1,5 @@
-FROM python:3.11-slim-buster
+ARG arch=amd64
+FROM --platform=linux/${arch} python:3.11-slim-buster
 
 WORKDIR /app
 
