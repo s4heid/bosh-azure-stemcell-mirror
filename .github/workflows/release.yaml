@@ -1,0 +1,83 @@
+---
+name: Release
+
+on:
+  workflow_dispatch:
+    inputs:
+      release_version:
+        description: 'New release version, in format vX.Y.Z'
+        required: true
+
+permissions:
+  contents: write
+
+concurrency:
+  group: ${{ github.workflow }}
+  cancel-in-progress: false
+
+env:
+  DEFAULT_BRANCH: "main"
+
+jobs:
+  release:
+    name: Validate and Release
+    runs-on: ubuntu-latest
+    steps:
+    - name: Validate release version input
+      id: validate_version
+      run: |
+        RELEASE_VERSION="${{ github.event.inputs.release_version }}"
+        echo "Input release version: $RELEASE_VERSION"
+        if [[ ! "$RELEASE_VERSION" =~ ^v[0-9]+\.[0-9]+\.[0-9]+$ ]]; then
+          echo "Error: Release version $RELEASE_VERSION is not in the correct format. Expected format: vX.Y.Z"
+          exit 1
+        fi
+        echo "RELEASE_VERSION=$RELEASE_VERSION" >> $GITHUB_ENV
+
+    - name: Checkout Code
+      uses: actions/checkout@v4
+      with:
+        fetch-depth: 0
+        fetch-tags: true
+        ref: refs/heads/${{ env.DEFAULT_BRANCH }}
+
+    - name: Set git user
+      run: |
+        git config user.name "${GITHUB_ACTOR}"
+        git config user.email "${GITHUB_ACTOR_ID}+${GITHUB_ACTOR}@users.noreply.github.com"
+
+    - name: Create Git Tag
+      run: |
+        git tag "$RELEASE_VERSION"
+
+    - name: Generate CHANGELOG.md
+      uses: addnab/docker-run-action@v3
+      with:
+        image: quay.io/git-chglog/git-chglog:0.15.4
+        options: -v ${{ github.workspace }}:/workdir
+        run: git-chglog --template=/workdir/.chglog/CHANGELOG.tpl.md --config=/workdir/.chglog/config.yml -o /workdir/CHANGELOG.md
+
+    - name: Generate RELEASE.md
+      uses: addnab/docker-run-action@v3
+      with:
+        image: quay.io/git-chglog/git-chglog:0.15.4
+        options: -v ${{ github.workspace }}:/workdir -e VERSION=${{ env.RELEASE_VERSION }}
+        run: git-chglog --template=/workdir/.chglog/RELEASE.tpl.md --config=/workdir/.chglog/config.yml -o /workdir/RELEASE.md "$VERSION"
+
+    - name: Commit CHANGELOG.md
+      run: |
+        git checkout "${DEFAULT_BRANCH}"
+        git add CHANGELOG.md
+        git commit -m "chore: update changelog for ${RELEASE_VERSION}"
+        
+    - name: Push changes including tags
+      run: |
+        git push origin HEAD:refs/heads/"${DEFAULT_BRANCH}"
+        git push origin refs/tags/"${RELEASE_VERSION}"
+
+    - name: Create new GitHub Release
+      uses: softprops/action-gh-release@v2
+      with:
+        body_path: RELEASE.md
+        generate_release_notes: false
+        tag_name: ${{ env.RELEASE_VERSION }}
