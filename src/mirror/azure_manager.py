@@ -102,7 +102,7 @@ class AzureManager:
                 "storageProfile": {
                     "osDiskImage": {
                         "source": {
-                            "id": f"/subscriptions/{self.subscription_id}/resourceGroups/{self.resource_group}/providers/Microsoft.Storage/storageAccounts/{self.storage_account_name}",
+                            "storageAccountId": f"/subscriptions/{self.subscription_id}/resourceGroups/{self.resource_group}/providers/Microsoft.Storage/storageAccounts/{self.storage_account_name}",
                             "uri": blob_uri,
                         }
                     }
