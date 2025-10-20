@@ -3,7 +3,9 @@
 [![Tests](https://github.com/s4heid/bosh-azure-stemcell-mirror/actions/workflows/test.yaml/badge.svg?branch=main)](https://github.com/s4heid/bosh-azure-stemcell-mirror/actions/workflows/test.yaml)
 [![Open in Dev Containers](https://img.shields.io/static/v1?label=Dev%20Containers&message=Open&color=blue)](https://vscode.dev/redirect?url=vscode://ms-vscode-remote.remote-containers/cloneInVolume?url=https://github.com/s4heid/bosh-azure-stemcell-mirror)
 
-This repository contains an Azure Function that mirrors BOSH stemcells from [bosh.io](https://bosh.io/stemcells) to an [Azure Compute Gallery](https://learn.microsoft.com/en-us/azure/virtual-machines/azure-compute-gallery) of your choice.
+This repository contains an Azure Container Apps Job that mirrors BOSH stemcells from [bosh.io](https://bosh.io/stemcells) to an [Azure Compute Gallery](https://learn.microsoft.com/en-us/azure/virtual-machines/azure-compute-gallery).
+
+The job runs on a scheduled basis (daily by default) to check for new stemcell versions and automatically uploads them to your Azure infrastructure.
 
 ## Architecture
 
@@ -29,32 +31,265 @@ sequenceDiagram
     StemcellMirror->>User: Completed stemcell check
 ```
 
+## Prerequisites
+
+- [Azure Developer CLI (azd)](https://learn.microsoft.com/en-us/azure/developer/azure-developer-cli/install-azd)
+- [Azure CLI (az)](https://docs.microsoft.com/en-us/cli/azure/install-azure-cli)
+- [Docker](https://docs.docker.com/get-docker/)
+- An Azure subscription
+
 ## Deployment
 
-1. Get an Azure Subscription
-2. Log-in to your Azure subscription using `azd auth login`.
-3. Run `azd up` to provision your infrastructure and deploy to Azure (or run `azd provision` then `azd deploy` to accomplish the tasks separately).
+### Initial Setup
+
+1. Clone this repository and navigate to the project directory.
+
+2. Log in to your Azure subscription:
+
+    ```bash
+    azd auth login
+    ```
+
+3. Initialize the Azure Developer environment (if not already done):
+
+    ```bash
+    azd init
+    ```
+
+    You'll be prompted to provide:
+    - **Environment name**: A unique name for your deployment (e.g., `stemcell-mirror-prod`)
+    - **Azure location**: The Azure region where resources will be deployed (e.g., `eastus`)
+
+### Deploy to Azure
+
+Deploy the infrastructure and application in one command:
+
+```bash
+azd up
+```
+
+This command will:
+- Provision all required Azure resources (see [Infrastructure](#infrastructure) section)
+- Build the Docker container image
+- Push the image to Azure Container Registry
+- Deploy the Container Apps Job
+
+Alternatively, you can run these steps separately:
+
+```bash
+azd provision  # Provision infrastructure
+azd deploy     # Build and deploy the application
+```
+
+### Infrastructure
+
+The deployment creates the following Azure resources:
+
+| Resource Type | Purpose |
+|---------------|---------|
+| **Resource Group** | Container for all resources |
+| **Container Registry** | Stores Docker images |
+| **Storage Account** | Stores stemcell VHD files |
+| **Compute Gallery** | Stores stemcell image definitions and versions |
+| **Container Apps Environment** | Runtime environment for the job |
+| **Container Apps Job** | Scheduled job that runs the mirror process |
+| **Log Analytics Workspace** | Collects logs and telemetry |
+| **Application Insights** | Application monitoring and diagnostics |
+| **Managed Identity** | Provides authentication for Azure resources |
+
+### Role Assignments
+
+The managed identity is automatically assigned the following roles:
+
+- **Contributor** (Resource Group scope): For managing compute resources
+- **Storage Blob Data Contributor** (Storage Account scope): For uploading VHD files
+- **AcrPull** (Container Registry scope): For pulling container images
+- **Compute Gallery Sharing Admin** (Compute Gallery scope): For creating gallery images
+
+## Configuration
+
+### Environment Variables
+
+The application is configured through environment variables. These are automatically set during deployment but can be customized in [`infra/main.parameters.json`](infra/main.parameters.json).
+
+#### Required Variables
+
+These variables are automatically configured by the deployment:
+
+| Variable | Description | Default |
+|----------|-------------|---------|
+| `AZURE_SUBSCRIPTION_ID` | Azure subscription ID | Set automatically |
+| `AZURE_RESOURCE_GROUP` | Resource group name | Set automatically |
+| `AZURE_REGION` | Azure region | Deployment location |
+| `AZURE_CONTAINER_REGISTRY_MANAGED_IDENTITY_ID` | Managed identity client ID | Set automatically |
+| `BASM_STORAGE_ACCOUNT_NAME` | Storage account name | Set automatically |
+
+#### Optional Configuration Variables
+
+| Variable | Description | Default |
+|----------|-------------|---------|
+| `BASM_GALLERY_NAME` | Azure Compute Gallery name | `bosh-azure-stemcells` |
+| `BASM_STORAGE_CONTAINER_NAME` | Storage container for VHD files | `stemcell` |
+| `BASM_GALLERY_IMAGE_NAME` | Gallery image definition name | `ubuntu-jammy` |
+| `BASM_STEMCELL_SERIES` | BOSH stemcell series to mirror | `bosh-azure-hyperv-ubuntu-jammy-go_agent` |
+| `BASM_GALLERY_PUBLISHER` | Gallery image publisher | `bosh` |
+| `BASM_GALLERY_OFFER` | Gallery image offer | Extracted from stemcell series |
+| `BASM_GALLERY_SKU` | Gallery image SKU | Extracted from stemcell series |
+| `BASM_MOUNTED_DIRECTORY` | Directory for temporary extraction | `/stemcellfiles` |
+
+### Schedule Configuration
+
+The job runs on a schedule defined in [`infra/app/app.bicep`](infra/app/app.bicep). By default, it runs daily at 07:22 UTC:
+
+```bicep
+scheduleTriggerConfig: {
+  cronExpression: '22 7 * * *'
+}
+```
+
+To modify the schedule, edit the `cronExpression` value and redeploy:
+
+```bash
+azd deploy
+```
+
+### Resource Configuration
+
+#### Job Resources
+
+The Container Apps Job is configured with:
+
+- **CPU**: 1.0 cores
+- **Memory**: 2.0 GiB
+- **Replica timeout**: 900 seconds (15 minutes)
+- **Retry limit**: 1 attempt
+
+These can be adjusted in [`infra/app/app.bicep`](infra/app/app.bicep) if needed for larger stemcells.
+
+#### Storage Volume
+
+The job uses an EmptyDir volume mounted at `/stemcellfiles` for temporary extraction of stemcell archives. This provides better performance than using system temp directories.
+
+### Customizing Stemcell Series
+
+To mirror a different stemcell series, update the `BASM_STEMCELL_SERIES` environment variable in [`infra/app/app.bicep`](infra/app/app.bicep):
+
+```bicep
+{
+  name: 'BASM_STEMCELL_SERIES'
+  value: 'bosh-azure-hyperv-ubuntu-noble-go_agent'  // Change this
+}
+```
+
+You may also want to update the corresponding `BASM_GALLERY_IMAGE_NAME`:
+
+```bicep
+{
+  name: 'BASM_GALLERY_IMAGE_NAME'
+  value: 'ubuntu-noble'  // Change this
+}
+```
+
+Available stemcell series can be found at [bosh.io/stemcells](https://bosh.io/stemcells/).
+
+## Manual Execution
+
+To manually trigger the job:
+
+```bash
+az containerapp job start --name <job-name> --resource-group <resource-group>
+```
+
+You can find the job name and resource group in the `.azure/<environment-name>/.env` file after deployment:
+
+```bash
+AZURE_CONTAINER_APPS_JOB_NAME=<job-name>
+AZURE_RESOURCE_GROUP=<resource-group>
+```
+
+## Monitoring
+
+### Viewing Logs
+
+View logs in Azure Portal:
+
+1. Navigate to your Container Apps Job
+2. Select **Execution history**
+3. Click on a specific execution to view logs
+
+Or use Azure CLI:
+
+```bash
+az containerapp job execution list \
+  --name <job-name> \
+  --resource-group <resource-group>
+```
+
+### Application Insights
+
+Application telemetry is automatically collected in Application Insights. You can query logs and metrics through the Azure Portal or using KQL queries.
 
 ## Development
 
-1. Configure a Python virtual environment using `venv` or your tool of choice.
+### Local Development Setup
+
+1. Configure a Python virtual environment:
 
     ```bash
     python -m venv .venv
     source ./.venv/bin/activate
     ```
 
-2. Install the required Python packages:
+2. Install development dependencies:
 
     ```bash
-    python -m pip install -r requirements.txt
+    pip install -r requirements-dev.txt
     ```
 
-3. Run the unit tests:
+### Running Tests
 
-    ```bash
-    python -m unittest discover tests
-    ```
+Run the unit tests:
+
+```bash
+python -m unittest discover tests
+```
+
+### Local Execution
+
+To run the application locally, you need to set the required environment variables:
+
+```bash
+export AZURE_SUBSCRIPTION_ID="<your-subscription-id>"
+export AZURE_RESOURCE_GROUP="<your-resource-group>"
+export BASM_STORAGE_ACCOUNT_NAME="<your-storage-account>"
+# ... other required variables (see .env.template)
+
+python src/main.py
+```
+
+> **Note**: Local execution requires Azure credentials. Use `az login` to authenticate.
+
+### Code Quality
+
+The project uses Ruff for linting and Black for code formatting. Configuration is in [`pyproject.toml`](pyproject.toml):
+
+```bash
+# Format code
+black src/ tests/
+
+# Lint code
+ruff check src/ tests/
+```
+
+## Cleanup
+
+To delete all Azure resources:
+
+```bash
+azd down
+```
+
+This will remove the resource group and all associated resources.
 
 ## Related Topics
 
