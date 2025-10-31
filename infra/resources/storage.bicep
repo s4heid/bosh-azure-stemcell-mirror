@@ -3,7 +3,7 @@ param location string = resourceGroup().location
 param tags object = {}
 
 resource storageAccount 'Microsoft.Storage/storageAccounts@2022-05-01' = {
-  name: name
+  name: replace(name, '-', '')
   location: location
   tags: tags
   kind: 'StorageV2'

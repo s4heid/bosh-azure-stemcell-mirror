@@ -3,11 +3,11 @@ param location string = resourceGroup().location
 param tags object = {}
 
 resource containerRegistry 'Microsoft.ContainerRegistry/registries@2023-01-01-preview' = {
-  name: name
+  name: replace(name, '-', '')
   location: location
   tags: tags
   sku: {
-    name: 'Standard'
+    name: 'Premium'
   }
   properties: {
     adminUserEnabled: true

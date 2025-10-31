@@ -7,6 +7,7 @@ param containerAppsEnvironmentName string
 param applicationInsightsName string
 param storageAccountName string
 param galleryName string
+param scheduleCronExpression string
 param exists bool
 @secure()
 param appDefinition object
@@ -108,10 +109,15 @@ module fetchLatestImage '../modules/fetch-container-image.bicep' = {
 }
 
 resource app 'Microsoft.App/jobs@2024-03-01' = {
-  name: '${name}-job'
+  name: toLower('${name}-job')
   location: location
   tags: union(tags, { 'azd-service-name': 'bosh-azure-stemcell-mirror-job' })
-  dependsOn: [acrPullRole]
+  dependsOn: [
+    contributorRole
+    storageBlobDataContributorRole
+    acrPullRole
+    galleryImageContributorRole
+  ]
   identity: {
     type: 'UserAssigned'
     userAssignedIdentities: {
@@ -143,7 +149,7 @@ resource app 'Microsoft.App/jobs@2024-03-01' = {
       }
       triggerType: 'Schedule'
       scheduleTriggerConfig: {
-        cronExpression: '22 7 * * *'
+        cronExpression: scheduleCronExpression
       }
     }
     template: {
@@ -158,7 +164,7 @@ resource app 'Microsoft.App/jobs@2024-03-01' = {
                 value: applicationInsights.properties.ConnectionString
               }
               {
-                name: 'AZURE_CONTAINER_REGISTRY_MANAGED_IDENTITY_ID'
+                name: 'AZURE_MANAGED_IDENTITY_ID'
                 value: identity.properties.clientId
               }
               {
@@ -180,10 +186,6 @@ resource app 'Microsoft.App/jobs@2024-03-01' = {
               {
                 name: 'BASM_GALLERY_NAME'
                 value: gallery.name
-              }
-              {
-                name: 'BASM_GALLERY_IMAGE_NAME'
-                value: 'ubuntu-jammy'
               }
               {
                 name: 'BASM_STEMCELL_SERIES'

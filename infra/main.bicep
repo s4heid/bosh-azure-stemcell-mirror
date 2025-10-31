@@ -9,6 +9,9 @@ param environmentName string
 @description('Primary location for all resources')
 param location string
 
+@description('Cron expression for the job schedule (default: daily at 07:22 UTC)')
+param scheduleCronExpression string = '22 7 * * *'
+
 param srcExists bool
 @secure()
 param srcDefinition object
@@ -94,13 +97,14 @@ module app 'app/app.bicep' = {
     appDefinition: srcDefinition
     storageAccountName: storageAccount.outputs.storageAccountName
     galleryName: gallery.outputs.name
+    scheduleCronExpression: scheduleCronExpression
   }
   scope: rg
 }
 
 // `azd deploy` uses this endpoint to push images to the container registry
 output AZURE_CONTAINER_REGISTRY_ENDPOINT string = containerRegistry.outputs.loginServer
-output AZURE_CONTAINER_REGISTRY_MANAGED_IDENTITY_ID string = app.outputs.identityClientId
+output AZURE_MANAGED_IDENTITY_ID string = app.outputs.identityClientId
 output AZURE_CONTAINER_APPS_JOB_NAME string = app.outputs.name
 output AZURE_CONTAINER_APPS_ENVIRONMENT_ID string = appsEnvironment.outputs.id
 output AZD_IS_PROVISIONED bool = true

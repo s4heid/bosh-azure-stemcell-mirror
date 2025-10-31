@@ -74,8 +74,8 @@ class AzureManager:
                 location=self.location,
                 identifier=GalleryImageIdentifier(
                     publisher=os.environ.get("BASM_GALLERY_PUBLISHER", "bosh"),
-                    offer=os.environ.get("BASM_GALLERY_OFFER", stemcell_series.split("-")[3]),
-                    sku=os.environ.get("BASM_GALLERY_SKU", stemcell_series.split("-")[4]),
+                    offer=os.environ.get("BASM_GALLERY_OFFER", stemcell_series),
+                    sku=os.environ.get("BASM_GALLERY_SKU", "gen1"),
                 ),
                 os_type="Linux",
                 hyper_v_generation="V1",

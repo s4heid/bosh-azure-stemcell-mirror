@@ -45,7 +45,7 @@ image="${AZURE_CONTAINER_REGISTRY_ENDPOINT}/bosh-azure-stemcell-mirror:$tag"
 
 echo "Building Docker image..."
 project_dir=$(realpath "$(dirname "$0")/..")
-docker buildx build --platform linux/amd64 --build-arg arch=amd64 -t "$image" "$project_dir"
+docker buildx build --platform linux/amd64 -t "$image" "$project_dir"
 
 echo "Logging into Azure Container Registry..."
 az acr login --name "$AZURE_CONTAINER_REGISTRY_ENDPOINT"

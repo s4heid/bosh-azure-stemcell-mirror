@@ -69,6 +69,7 @@ azd up
 ```
 
 This command will:
+
 - Provision all required Azure resources (see [Infrastructure](#infrastructure) section)
 - Build the Docker container image
 - Push the image to Azure Container Registry
@@ -118,40 +119,29 @@ These variables are automatically configured by the deployment:
 
 | Variable | Description | Default |
 |----------|-------------|---------|
-| `AZURE_SUBSCRIPTION_ID` | Azure subscription ID | Set automatically |
-| `AZURE_RESOURCE_GROUP` | Resource group name | Set automatically |
 | `AZURE_REGION` | Azure region | Deployment location |
-| `AZURE_CONTAINER_REGISTRY_MANAGED_IDENTITY_ID` | Managed identity client ID | Set automatically |
+| `AZURE_RESOURCE_GROUP` | Resource group name | Set automatically |
+| `AZURE_SUBSCRIPTION_ID` | Azure subscription ID | Set automatically |
+| `AZURE_MANAGED_IDENTITY_ID` | User Managed identity client ID | Set automatically |
 | `BASM_STORAGE_ACCOUNT_NAME` | Storage account name | Set automatically |
 
 #### Optional Configuration Variables
 
 | Variable | Description | Default |
 |----------|-------------|---------|
-| `BASM_GALLERY_NAME` | Azure Compute Gallery name | `bosh-azure-stemcells` |
+| `BASM_STEMCELL_SERIES` | BOSH stemcell series to mirror (from bosh.io) | `bosh-azure-hyperv-ubuntu-jammy-go_agent` |
 | `BASM_STORAGE_CONTAINER_NAME` | Storage container for VHD files | `stemcell` |
-| `BASM_GALLERY_IMAGE_NAME` | Gallery image definition name | `ubuntu-jammy` |
-| `BASM_STEMCELL_SERIES` | BOSH stemcell series to mirror | `bosh-azure-hyperv-ubuntu-jammy-go_agent` |
+| `BASM_GALLERY_NAME` | Azure Compute Gallery name | `bosh-azure-stemcells` |
 | `BASM_GALLERY_PUBLISHER` | Gallery image publisher | `bosh` |
 | `BASM_GALLERY_OFFER` | Gallery image offer | Extracted from stemcell series |
 | `BASM_GALLERY_SKU` | Gallery image SKU | Extracted from stemcell series |
+| `BASM_GALLERY_IMAGE_NAME` | Gallery image definition name | Extracted from stemcell series |
 | `BASM_MOUNTED_DIRECTORY` | Directory for temporary extraction | `/stemcellfiles` |
 
-### Schedule Configuration
-
-The job runs on a schedule defined in [`infra/app/app.bicep`](infra/app/app.bicep). By default, it runs daily at 07:22 UTC:
-
-```bicep
-scheduleTriggerConfig: {
-  cronExpression: '22 7 * * *'
-}
-```
-
-To modify the schedule, edit the `cronExpression` value and redeploy:
-
-```bash
-azd deploy
-```
+> [!NOTE]
+> The `BASM_STEMCELL_SERIES` envrionment variable must be set to a valid bosh.io stemcell series name (e.g. `bosh-azure-hyperv-ubuntu-noble-go_agent`, `bosh-azure-hyperv-ubuntu-jammy-go_agent`, `bosh-azure-hyperv-ubuntu-xenial-go_agent`).
+>
+> A list of available stemcell series can be found at [bosh.io/stemcells](https://bosh.io/stemcells/).
 
 ### Resource Configuration
 
@@ -164,33 +154,11 @@ The Container Apps Job is configured with:
 - **Replica timeout**: 900 seconds (15 minutes)
 - **Retry limit**: 1 attempt
 
-These can be adjusted in [`infra/app/app.bicep`](infra/app/app.bicep) if needed for larger stemcells.
+These can be adjusted in [`infra/app/app.bicep`](infra/app/app.bicep) if needed.
 
 #### Storage Volume
 
 The job uses an EmptyDir volume mounted at `/stemcellfiles` for temporary extraction of stemcell archives. This provides better performance than using system temp directories.
-
-### Customizing Stemcell Series
-
-To mirror a different stemcell series, update the `BASM_STEMCELL_SERIES` environment variable in [`infra/app/app.bicep`](infra/app/app.bicep):
-
-```bicep
-{
-  name: 'BASM_STEMCELL_SERIES'
-  value: 'bosh-azure-hyperv-ubuntu-noble-go_agent'  // Change this
-}
-```
-
-You may also want to update the corresponding `BASM_GALLERY_IMAGE_NAME`:
-
-```bicep
-{
-  name: 'BASM_GALLERY_IMAGE_NAME'
-  value: 'ubuntu-noble'  // Change this
-}
-```
-
-Available stemcell series can be found at [bosh.io/stemcells](https://bosh.io/stemcells/).
 
 ## Manual Execution
 
@@ -267,7 +235,8 @@ export BASM_STORAGE_ACCOUNT_NAME="<your-storage-account>"
 python src/main.py
 ```
 
-> **Note**: Local execution requires Azure credentials. Use `az login` to authenticate.
+> [!IMPORTANT]
+> Local execution requires Azure credentials. Use `az login` to authenticate.
 
 ### Code Quality
 

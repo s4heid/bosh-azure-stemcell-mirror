@@ -3,7 +3,7 @@ param location string = resourceGroup().location
 param tags object = {}
 
 resource computeGallery 'Microsoft.Compute/galleries@2023-07-03' = {
-  name: name
+  name: replace(name, '-', '')
   location: location
   tags: tags
   properties: {
