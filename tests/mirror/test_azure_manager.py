@@ -4,7 +4,6 @@ import unittest.mock
 from unittest.mock import MagicMock, patch, mock_open
 from azure.core.exceptions import ResourceNotFoundError
 from azure.storage.blob import BlobServiceClient, ContainerClient
-from azure.mgmt.compute.models import GalleryImageVersion
 from azure.mgmt.compute import ComputeManagementClient
 from src.mirror.azure_manager import AzureManager
 
@@ -63,9 +62,7 @@ class TestAzureManager(unittest.TestCase):
             self.manager.upload_vhd("fake.vhd")
 
     def test_check_or_create_gallery_image_exists(self):
-        self.mock_compute_client.return_value.gallery_images.get.return_value = GalleryImageVersion(
-            id="test", location="test", tags={}, os_type="test", os_state="test", publishing_profile=None
-        )
+        self.mock_compute_client.return_value.gallery_images.get.return_value = MagicMock()
 
         self.manager.check_or_create_gallery_image("series", "gallery", "img")
 
@@ -86,9 +83,7 @@ class TestAzureManager(unittest.TestCase):
         )
 
     def test_gallery_image_version_exists_true(self):
-        self.mock_compute_client.return_value.gallery_images.get.return_value = GalleryImageVersion(
-            id="test", location="test", tags={}, os_type="test", os_state="test", publishing_profile=None
-        )
+        self.mock_compute_client.return_value.gallery_image_versions.get.return_value = MagicMock()
 
         result = self.manager.gallery_image_version_exists("gallery", "img", "ver")
 

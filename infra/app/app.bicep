@@ -180,11 +180,11 @@ resource app 'Microsoft.App/jobs@2024-03-01' = {
                 value: resourceGroup().name
               }
               {
-                name: 'BASM_STORAGE_ACCOUNT_NAME'
+                name: 'AZURE_STORAGE_ACCOUNT_NAME'
                 value: storageAccount.name
               }
               {
-                name: 'BASM_GALLERY_NAME'
+                name: 'AZURE_GALLERY_NAME'
                 value: gallery.name
               }
               {

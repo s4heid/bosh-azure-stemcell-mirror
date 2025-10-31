@@ -113,7 +113,7 @@ The managed identity is automatically assigned the following roles:
 
 The application is configured through environment variables. These are automatically set during deployment but can be customized in [`infra/main.parameters.json`](infra/main.parameters.json).
 
-#### Required Variables
+#### (Required) Azure Deployment
 
 These variables are automatically configured by the deployment:
 
@@ -123,25 +123,57 @@ These variables are automatically configured by the deployment:
 | `AZURE_RESOURCE_GROUP` | Resource group name | Set automatically |
 | `AZURE_SUBSCRIPTION_ID` | Azure subscription ID | Set automatically |
 | `AZURE_MANAGED_IDENTITY_ID` | User Managed identity client ID | Set automatically |
-| `BASM_STORAGE_ACCOUNT_NAME` | Storage account name | Set automatically |
+| `AZURE_STORAGE_ACCOUNT_NAME` | Storage account name | Set automatically |
+| `AZURE_GALLERY_NAME` | Azure Compute Gallery name | Set automatically |
 
-#### Optional Configuration Variables
+#### (Optional) Azure Compute Gallery
 
 | Variable | Description | Default |
 |----------|-------------|---------|
-| `BASM_STEMCELL_SERIES` | BOSH stemcell series to mirror (from bosh.io) | `bosh-azure-hyperv-ubuntu-jammy-go_agent` |
-| `BASM_STORAGE_CONTAINER_NAME` | Storage container for VHD files | `stemcell` |
-| `BASM_GALLERY_NAME` | Azure Compute Gallery name | `bosh-azure-stemcells` |
 | `BASM_GALLERY_PUBLISHER` | Gallery image publisher | `bosh` |
 | `BASM_GALLERY_OFFER` | Gallery image offer | Extracted from stemcell series |
 | `BASM_GALLERY_SKU` | Gallery image SKU | Extracted from stemcell series |
 | `BASM_GALLERY_IMAGE_NAME` | Gallery image definition name | Extracted from stemcell series |
-| `BASM_MOUNTED_DIRECTORY` | Directory for temporary extraction | `/stemcellfiles` |
 
-> [!NOTE]
-> The `BASM_STEMCELL_SERIES` envrionment variable must be set to a valid bosh.io stemcell series name (e.g. `bosh-azure-hyperv-ubuntu-noble-go_agent`, `bosh-azure-hyperv-ubuntu-jammy-go_agent`, `bosh-azure-hyperv-ubuntu-xenial-go_agent`).
+#### (Optional) Stemcell
+
+##### bosh.io
+
+| Variable | Description | Default |
+|----------|-------------|---------|
+| `BASM_STEMCELL_SERIES` | BOSH stemcell series to mirror (from bosh.io) | `bosh-azure-hyperv-ubuntu-jammy-go_agent` |
+| `BASM_MOUNTED_DIRECTORY` | Directory for temporary extraction. | `/stemcellfiles` |
+
+> [!IMPORTANT]
+> The `BASM_STEMCELL_SERIES` environment variable must be set to a valid bosh.io stemcell series name (e.g. `bosh-azure-hyperv-ubuntu-noble-go_agent`, `bosh-azure-hyperv-ubuntu-jammy-go_agent`, `bosh-azure-hyperv-ubuntu-xenial-go_agent`).
 >
 > A list of available stemcell series can be found at [bosh.io/stemcells](https://bosh.io/stemcells/).
+
+##### Ephemeral Storage
+
+| Variable | Description | Default |
+|----------|-------------|---------|
+| `BASM_MOUNTED_DIRECTORY` | Directory for temporary extraction. | `/stemcellfiles` |
+
+> [!NOTE]
+> The `BASM_MOUNTED_DIRECTORY` allows you to set a custom temporary extraction directory within the container. This is helpful if you want to use smaller container sizes with ephemeral storage for extraction, since downloaded stemcells are usually larger than 5GB.
+
+#### (Optional) Notification
+
+The stemcell mirror can send out a notification about successful upload of new stemcells.
+
+##### GitHub Actions Workflow Dispatch
+
+Configure these variables to dispatch an external GitHub Actions workflow whenever a new stemcell version is published. If `BASM_NOTIFY_GITHUB_TOKEN` is not provided, notifications remain disabled.
+
+| Variable | Description | Default |
+|----------|-------------|---------|
+| `BASM_NOTIFY_GITHUB_TOKEN` | GitHub token with `workflow` scope | _Required to enable notifications_ |
+| `BASM_NOTIFY_GITHUB_API_URL` | GitHub API base URL (`https://api.github.com` for GitHub.com, `https://<ghe-host>/api/v3` for GHES) | `https://api.github.com` |
+| `BASM_NOTIFY_GITHUB_OWNER` | GitHub repository owner | - |
+| `BASM_NOTIFY_GITHUB_REPO` | GitHub repository name | - |
+| `BASM_NOTIFY_GITHUB_WORKFLOW` | Workflow filename or ID to dispatch | - |
+| `BASM_NOTIFY_GITHUB_REF` | Branch or tag reference used for the workflow dispatch | - |
 
 ### Resource Configuration
 
@@ -229,7 +261,7 @@ To run the application locally, you need to set the required environment variabl
 ```bash
 export AZURE_SUBSCRIPTION_ID="<your-subscription-id>"
 export AZURE_RESOURCE_GROUP="<your-resource-group>"
-export BASM_STORAGE_ACCOUNT_NAME="<your-storage-account>"
+export AZURE_STORAGE_ACCOUNT_NAME="<your-storage-account>"
 # ... other required variables (see .env.template)
 
 python src/main.py

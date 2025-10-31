@@ -5,19 +5,25 @@ import requests
 import tarfile
 import tempfile
 
-from typing import Optional, List
+from typing import Optional, List, Dict
 from semver.version import Version
 from .azure_manager import AzureManager
+from .notify import Notifier
 
 STEMCELL_API_URL = "https://bosh.io/api/v1/stemcells/"
 
 
 class StemcellMirror:
     def __init__(
-        self, azure_manager: AzureManager, extraction_directory: str = "", logger: Optional[logging.Logger] = None
+        self,
+        azure_manager: AzureManager,
+        extraction_directory: str = "",
+        notifier: Optional[Notifier] = None,
+        logger: Optional[logging.Logger] = None,
     ) -> None:
         self.azure_manager: AzureManager = azure_manager
         self.extraction_directory: str = extraction_directory
+        self.notifier: Optional[Notifier] = notifier
         self.logger: logging.Logger = logger or logging.getLogger(__name__)
 
     def run(self, stemcell_series: str, gallery_name: str, gallery_image_name: str) -> None:
@@ -74,6 +80,17 @@ class StemcellMirror:
             )
 
             self.logger.info("Completed vhd upload and gallery image version creation.")
+
+            if self.notifier:
+                metadata: Dict[str, str] = {
+                    "gallery_name": gallery_name,
+                    "gallery_image_name": gallery_image_name,
+                    "gallery_image_version": formatted_latest_version,
+                    "gallery_subscription_id": self.azure_manager.subscription_id,
+                    "gallery_resource_group": self.azure_manager.resource_group,
+                }
+                self.logger.info("Dispatching notifications for new stemcell version %s...", formatted_latest_version)
+                self.notifier.notify_new_stemcell(metadata)
         finally:
             self.logger.info(f"Cleaning up temp directory: {extracted_stemcell_dir}")
             shutil.rmtree(extracted_stemcell_dir, ignore_errors=True)
