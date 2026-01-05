@@ -71,6 +71,16 @@ module gallery 'resources/gallery.bicep' = {
   scope: rg
 }
 
+module keyVault 'resources/keyVault.bicep' = {
+  name: 'keyVault'
+  params: {
+    name: '${abbrs.keyVaultVaults}${take(environmentName, 10)}-${resourceToken}'
+    location: location
+    tags: tags
+  }
+  scope: rg
+}
+
 module appsEnvironment 'resources/appsEnvironment.bicep' = {
   name: 'appsEnvironment'
   params: {
@@ -97,6 +107,7 @@ module app 'app/app.bicep' = {
     appDefinition: srcDefinition
     storageAccountName: storageAccount.outputs.storageAccountName
     galleryName: gallery.outputs.name
+    keyVaultName: keyVault.outputs.name
     scheduleCronExpression: scheduleCronExpression
   }
   scope: rg
@@ -112,3 +123,4 @@ output AZD_IS_PROVISIONED bool = true
 output AZURE_TENANT_ID string = tenant().tenantId
 output AZURE_SUBSCRIPTION_ID string = subscription().subscriptionId
 output AZURE_RESOURCE_GROUP string = rg.name
+output AZURE_KEY_VAULT_NAME string = keyVault.outputs.name

@@ -7,6 +7,7 @@ param containerAppsEnvironmentName string
 param applicationInsightsName string
 param storageAccountName string
 param galleryName string
+param keyVaultName string
 param scheduleCronExpression string
 param exists bool
 @secure()
@@ -46,6 +47,10 @@ resource storageAccount 'Microsoft.Storage/storageAccounts@2022-05-01' existing 
 
 resource gallery 'Microsoft.Compute/galleries@2023-07-03' existing = {
   name: galleryName
+}
+
+resource keyVault 'Microsoft.KeyVault/vaults@2023-07-01' existing = {
+  name: keyVaultName
 }
 
 resource contributorRole 'Microsoft.Authorization/roleAssignments@2022-04-01' = {
@@ -100,6 +105,19 @@ resource galleryImageContributorRole 'Microsoft.Authorization/roleAssignments@20
   }
 }
 
+resource keyVaultSecretsUserRole 'Microsoft.Authorization/roleAssignments@2022-04-01' = {
+  scope: keyVault
+  name: guid(subscription().id, resourceGroup().id, identity.id, 'keyVaultSecretsUserRole')
+  properties: {
+    roleDefinitionId: subscriptionResourceId(
+      'Microsoft.Authorization/roleDefinitions',
+      '4633458b-17de-408a-b874-0445c86b69e6'
+    )
+    principalType: 'ServicePrincipal'
+    principalId: identity.properties.principalId
+  }
+}
+
 module fetchLatestImage '../modules/fetch-container-image.bicep' = {
   name: '${name}-fetch-image'
   params: {
@@ -117,6 +135,7 @@ resource app 'Microsoft.App/jobs@2024-03-01' = {
     storageBlobDataContributorRole
     acrPullRole
     galleryImageContributorRole
+    keyVaultSecretsUserRole
   ]
   identity: {
     type: 'UserAssigned'

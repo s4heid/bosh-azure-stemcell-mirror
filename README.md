@@ -96,6 +96,7 @@ The deployment creates the following Azure resources:
 | **Container Apps Job** | Scheduled job that runs the mirror process |
 | **Log Analytics Workspace** | Collects logs and telemetry |
 | **Application Insights** | Application monitoring and diagnostics |
+| **Key Vault** | Securely stores sensitive configuration (e.g., GitHub token) |
 | **Managed Identity** | Provides authentication for Azure resources |
 
 ### Role Assignments
@@ -106,6 +107,7 @@ The managed identity is automatically assigned the following roles:
 - **Storage Blob Data Contributor** (Storage Account scope): For uploading VHD files
 - **AcrPull** (Container Registry scope): For pulling container images
 - **Compute Gallery Sharing Admin** (Compute Gallery scope): For creating gallery images
+- **Key Vault Secrets User** (Key Vault scope): For reading secrets from Key Vault
 
 ## Configuration
 
@@ -164,16 +166,36 @@ The stemcell mirror can send out a notification about successful upload of new s
 
 ##### GitHub Actions Workflow Dispatch
 
-Configure these variables to dispatch an external GitHub Actions workflow whenever a new stemcell version is published. If `BASM_NOTIFY_GITHUB_TOKEN` is not provided, notifications remain disabled.
+Configure these variables to dispatch an external GitHub Actions workflow whenever a new stemcell version is published. The `BASM_NOTIFY_GITHUB_TOKEN` must be stored in Azure Key Vault as a secret named `github-token`. If this secret is not set, notifications remain disabled.
 
 | Variable | Description | Default |
 |----------|-------------|---------|
-| `BASM_NOTIFY_GITHUB_TOKEN` | GitHub token with `workflow` scope | _Required to enable notifications_ |
+| `BASM_NOTIFY_GITHUB_TOKEN` | GitHub token with `workflow` scope (stored in Key Vault as `github-token`) | _Required to enable notifications_ |
 | `BASM_NOTIFY_GITHUB_API_URL` | GitHub API base URL (`https://api.github.com` for GitHub.com, `https://<ghe-host>/api/v3` for GHES) | `https://api.github.com` |
 | `BASM_NOTIFY_GITHUB_OWNER` | GitHub repository owner | - |
 | `BASM_NOTIFY_GITHUB_REPO` | GitHub repository name | - |
 | `BASM_NOTIFY_GITHUB_WORKFLOW` | Workflow filename or ID to dispatch | - |
 | `BASM_NOTIFY_GITHUB_REF` | Branch or tag reference used for the workflow dispatch | - |
+
+##### Setting the GitHub Token in Key Vault
+
+After the initial deployment, store your GitHub token in Key Vault:
+
+```bash
+az keyvault secret set \
+  --vault-name <key-vault-name> \
+  --name github-token \
+  --value "<your-github-token>"
+```
+
+You can find the Key Vault name in the `.azure/<environment-name>/.env` file:
+
+```bash
+AZURE_KEY_VAULT_NAME=<key-vault-name>
+```
+
+> [!NOTE]
+> The GitHub token requires the `workflow` scope to trigger GitHub Actions workflow dispatches.
 
 ### Resource Configuration
 
