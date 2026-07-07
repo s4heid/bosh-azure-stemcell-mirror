@@ -5,10 +5,10 @@
 			"label": "pip install",
 			"type": "shell",
 			"osx": {
-				"command": "python -m pip install -r requirements.txt"
+				"command": "python -m pip install -r requirements-dev.txt"
 			},
 			"linux": {
-				"command": "python -m pip install -r requirements.txt"
+				"command": "python -m pip install -r requirements-dev.txt"
 			},
 			"problemMatcher": []
 		}
