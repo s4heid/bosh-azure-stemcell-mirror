@@ -51,18 +51,22 @@ jobs:
         git tag "$RELEASE_VERSION"
 
     - name: Generate CHANGELOG.md
-      uses: addnab/docker-run-action@v3
+      uses: orhun/git-cliff-action@v4
       with:
-        image: quay.io/git-chglog/git-chglog:0.15.4
-        options: -v ${{ github.workspace }}:/workdir
-        run: git-chglog --template=/workdir/.chglog/CHANGELOG.tpl.md --config=/workdir/.chglog/config.yml -o /workdir/CHANGELOG.md
+        config: cliff.toml
+        args: --verbose
+      env:
+        OUTPUT: CHANGELOG.md
+        GITHUB_REPO: ${{ github.repository }}
 
     - name: Generate RELEASE.md
-      uses: addnab/docker-run-action@v3
+      uses: orhun/git-cliff-action@v4
       with:
-        image: quay.io/git-chglog/git-chglog:0.15.4
-        options: -v ${{ github.workspace }}:/workdir -e VERSION=${{ env.RELEASE_VERSION }}
-        run: git-chglog --template=/workdir/.chglog/RELEASE.tpl.md --config=/workdir/.chglog/config.yml -o /workdir/RELEASE.md "$VERSION"
+        config: cliff-release.toml
+        args: --verbose --latest
+      env:
+        OUTPUT: RELEASE.md
+        GITHUB_REPO: ${{ github.repository }}
 
     - name: Commit CHANGELOG.md
       run: |

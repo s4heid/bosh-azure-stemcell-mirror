@@ -1,0 +1,53 @@
+# git-cliff ~ configuration file
+# https://git-cliff.org/docs/configuration
+#
+# Generates RELEASE.md: the notes for a single release, used as the body of the
+# GitHub Release. Run with `git-cliff --config cliff-release.toml --latest`.
+
+[changelog]
+header = ""
+# Rendered for the release being published.
+body = """
+{% if version %}\
+    ## Changes {% if previous.version %}since [{{ previous.version }}]{% else %}by Kind{% endif %}
+{% else %}\
+    ## Changes
+{% endif %}\
+{% for group, commits in commits | group_by(attribute="group") %}\
+    ### {{ group }}
+    {% for commit in commits %}\
+        - [`{{ commit.id | truncate(length=7, end="") }}`](<REPO>/commit/{{ commit.id }}) {% if commit.scope %}**{{ commit.scope }}:** {% endif %}{{ commit.message }}{% if commit.links %} ({% for link in commit.links %}{{ link.text }}{% if not loop.last %}, {% endif %}{% endfor %}){% endif %}
+    {% endfor %}
+{% endfor %}\
+"""
+# Reference-style compare link for the previous release.
+footer = """
+{% for release in releases -%}
+    {% if release.previous.version -%}
+        [{{ release.previous.version }}]: <REPO>/compare/{{ release.previous.version }}...{{ release.version }}
+    {% endif -%}
+{% endfor %}\
+"""
+trim = true
+postprocessors = [
+    { pattern = '<REPO>', replace = "https://github.com/s4heid/bosh-azure-stemcell-mirror" },
+]
+
+[git]
+conventional_commits = true
+filter_unconventional = true
+filter_commits = true
+commit_parsers = [
+    { message = "^feat", group = "Features" },
+    { message = "^fix", group = "Bug Fixes" },
+    { message = "^perf", group = "Performance Improvements" },
+    { message = "^refactor", group = "Code Refactoring" },
+    { message = "^docs", group = "Documentation" },
+    { message = "^ci", group = "Continous Integration" },
+    { message = "^chore", group = "Chores" },
+]
+link_parsers = [
+    { pattern = '#(\d+)', href = "https://github.com/s4heid/bosh-azure-stemcell-mirror/issues/$1" },
+]
+tag_pattern = '^v[0-9]+\.[0-9]+\.[0-9]+$'
+sort_commits = "newest"

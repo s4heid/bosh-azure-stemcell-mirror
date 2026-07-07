@@ -25,7 +25,7 @@
         }
     },
     "forwardPorts": [],
-    "postCreateCommand": "python -m pip install pip-tools && python -m pip install -r requirements-dev.txt",
+    "postCreateCommand": "python -m pip install pip-tools git-cliff && python -m pip install -r requirements-dev.txt",
     "remoteUser": "vscode",
     "hostRequirements": {
         "memory": "8gb"
