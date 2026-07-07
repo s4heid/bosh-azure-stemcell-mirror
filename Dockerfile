@@ -19,4 +19,4 @@ RUN useradd -m vcap \
 
 USER vcap
 
-ENTRYPOINT ["python", "src/main.py"]
+ENTRYPOINT ["python", "-m", "src.main"]

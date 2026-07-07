@@ -1,7 +1,8 @@
 import unittest
 from unittest.mock import MagicMock, patch
 
-from src.mirror.notify import GitHubNotifier, GitHubNotifierConfig, NotificationError
+from src.notify.github import GitHubNotifier, GitHubNotifierConfig
+from src.notify.notifier import NotificationError
 
 
 class TestGitHubNotifier(unittest.TestCase):
@@ -17,7 +18,7 @@ class TestGitHubNotifier(unittest.TestCase):
         )
         self.notifier = GitHubNotifier(self.config)
 
-    @patch("src.mirror.notify.requests.post")
+    @patch("src.notify.github.requests.post")
     def test_notify_success(self, mock_post: MagicMock) -> None:
         mock_response = MagicMock()
         mock_response.status_code = 204
@@ -47,7 +48,7 @@ class TestGitHubNotifier(unittest.TestCase):
             "test-gallery-rg",
         )
 
-    @patch("src.mirror.notify.requests.post")
+    @patch("src.notify.github.requests.post")
     def test_notify_failure_raises(self, mock_post: MagicMock) -> None:
         mock_response = MagicMock()
         mock_response.status_code = 500

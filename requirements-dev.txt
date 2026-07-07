@@ -87,11 +87,15 @@ pyjwt==2.13.0
     #   msal
 pytokens==0.4.1
     # via black
+pyyaml==6.0.3
+    # via -r requirements.txt
 requests==2.34.2
     # via
     #   -r requirements.txt
     #   azure-core
     #   msal
+ruff==0.15.20
+    # via -r requirements-dev.in
 semver==3.0.4
     # via -r requirements.txt
 typing-extensions==4.16.0

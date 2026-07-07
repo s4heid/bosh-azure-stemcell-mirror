@@ -51,6 +51,8 @@ pyjwt==2.13.0
     # via
     #   msal
     #   pyjwt
+pyyaml==6.0.3
+    # via -r requirements.in
 requests==2.34.2
     # via
     #   -r requirements.in

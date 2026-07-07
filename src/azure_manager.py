@@ -1,13 +1,42 @@
+import logging
 import os
 import uuid
-import logging
 
-from azure.core.exceptions import ResourceNotFoundError, HttpResponseError
+from azure.core.exceptions import HttpResponseError, ResourceNotFoundError
+from azure.identity import AzureAuthorityHosts, DefaultAzureCredential
 from azure.mgmt.compute import ComputeManagementClient
-from azure.mgmt.compute.models import GalleryImage, GalleryImageIdentifier
+from azure.mgmt.compute.models import GalleryImage, GalleryImageFeature, GalleryImageIdentifier
 from azure.storage.blob import BlobServiceClient, ContainerClient
-from azure.identity import DefaultAzureCredential, AzureAuthorityHosts
-from typing import Optional
+
+DEFAULT_GENERATION = "gen1"
+
+
+def _hyper_v_generation(generation: str) -> str:
+    return f"V{generation.lower().removeprefix('gen')}"
+
+
+def _normalize_architecture(architecture: str | None) -> str | None:
+    if not architecture:
+        return None
+    normalized = architecture.lower()
+    if normalized in ("x86_64", "x64"):
+        return "x64"
+    if normalized == "arm64":
+        return "Arm64"
+    return architecture
+
+
+def _normalize_disk_controllers(disk_controllers: list) -> list:
+    normalized = []
+    for controller in disk_controllers:
+        value = str(controller).lower()
+        if value == "scsi":
+            normalized.append("SCSI")
+        elif value == "nvme":
+            normalized.append("NVMe")
+        else:
+            normalized.append(controller)
+    return normalized
 
 
 class AzureManager:
@@ -17,7 +46,7 @@ class AzureManager:
         client_id: str,
         resource_group: str,
         location: str,
-        logger: Optional[logging.Logger] = None,
+        logger: logging.Logger | None = None,
     ) -> None:
         self.subscription_id: str = subscription_id
         self.resource_group: str = resource_group
@@ -26,9 +55,9 @@ class AzureManager:
             managed_identity_client_id=client_id, authority=AzureAuthorityHosts.AZURE_PUBLIC_CLOUD
         )
         self.compute_client: ComputeManagementClient = ComputeManagementClient(self.credential, subscription_id)
-        self.container_client: Optional[ContainerClient] = None
-        self.storage_account_name: Optional[str] = None
-        self.storage_container: Optional[str] = None
+        self.container_client: ContainerClient | None = None
+        self.storage_account_name: str | None = None
+        self.storage_container: str | None = None
         self.logger: logging.Logger = logger or logging.getLogger(__name__)
 
     def setup_storage(self, storage_account_name: str, storage_container: str) -> None:
@@ -64,21 +93,32 @@ class AzureManager:
 
         return f"https://{self.storage_account_name}.blob.core.windows.net/{self.storage_container}/{blob_name}"
 
-    def check_or_create_gallery_image(self, stemcell_series: str, gallery_name: str, gallery_image_name: str) -> None:
+    def check_or_create_gallery_image(
+        self,
+        stemcell_series: str,
+        gallery_name: str,
+        gallery_image_name: str,
+        cloud_properties: dict | None = None,
+    ) -> None:
+        cloud_properties = cloud_properties or {}
         try:
             self.compute_client.gallery_images.get(self.resource_group, gallery_name, gallery_image_name)
             self.logger.info("Gallery image definition already exists.")
         except ResourceNotFoundError:
             self.logger.info("Creating new gallery image definition...")
+            generation: str = str(cloud_properties.get("generation", DEFAULT_GENERATION))
             gallery_image_params: GalleryImage = GalleryImage(
                 location=self.location,
                 identifier=GalleryImageIdentifier(
                     publisher=os.environ.get("BASM_GALLERY_PUBLISHER", "bosh"),
                     offer=os.environ.get("BASM_GALLERY_OFFER", stemcell_series),
-                    sku=os.environ.get("BASM_GALLERY_SKU", "gen1"),
+                    sku=os.environ.get("BASM_GALLERY_SKU", generation),
                 ),
                 os_type="Linux",
-                hyper_v_generation="V1",
+                os_state="Generalized",
+                hyper_v_generation=_hyper_v_generation(generation),
+                architecture=_normalize_architecture(cloud_properties.get("architecture")),
+                features=self._build_gallery_image_features(cloud_properties) or None,
             )
             self.compute_client.gallery_images.begin_create_or_update(
                 resource_group_name=self.resource_group,
@@ -88,9 +128,62 @@ class AzureManager:
             )
             self.logger.info("Gallery image definition created.")
 
+    def _build_gallery_image_features(self, cloud_properties: dict) -> list[GalleryImageFeature]:
+        """Build gallery image features from stemcell cloud properties.
+
+        Features only apply to generation 2 images, mirroring the bosh-azure-cpi.
+        """
+        generation: str = str(cloud_properties.get("generation", DEFAULT_GENERATION)).lower()
+        if generation == DEFAULT_GENERATION:
+            return []
+
+        features: list[GalleryImageFeature] = []
+
+        if "disk_controller_types" in cloud_properties:
+            disk_controllers = cloud_properties["disk_controller_types"]
+            if isinstance(disk_controllers, list) and disk_controllers:
+                features.append(
+                    GalleryImageFeature(
+                        name="DiskControllerTypes",
+                        value=",".join(_normalize_disk_controllers(disk_controllers)),
+                    )
+                )
+            else:
+                self.logger.warning(f"Ignoring invalid 'disk_controller_types' metadata: {disk_controllers}")
+
+        if "accelerated_networking" in cloud_properties:
+            features.append(
+                GalleryImageFeature(
+                    name="IsAcceleratedNetworkSupported",
+                    value="True" if cloud_properties["accelerated_networking"] else "False",
+                )
+            )
+
+        if "hibernation" in cloud_properties:
+            features.append(
+                GalleryImageFeature(
+                    name="IsHibernateSupported",
+                    value="True" if cloud_properties["hibernation"] else "False",
+                )
+            )
+
+        if "security_type" in cloud_properties:
+            features.append(
+                GalleryImageFeature(
+                    name="SecurityType",
+                    value=cloud_properties["security_type"],
+                )
+            )
+
+        return features
+
     def create_gallery_image_version(
         self, gallery_name: str, gallery_image_name: str, gallery_image_version: str, blob_uri: str
     ) -> None:
+        storage_account_id = (
+            f"/subscriptions/{self.subscription_id}/resourceGroups/{self.resource_group}"
+            f"/providers/Microsoft.Storage/storageAccounts/{self.storage_account_name}"
+        )
         self.compute_client.gallery_image_versions.begin_create_or_update(
             self.resource_group,
             gallery_name,
@@ -102,7 +195,7 @@ class AzureManager:
                 "storageProfile": {
                     "osDiskImage": {
                         "source": {
-                            "storageAccountId": f"/subscriptions/{self.subscription_id}/resourceGroups/{self.resource_group}/providers/Microsoft.Storage/storageAccounts/{self.storage_account_name}",
+                            "storageAccountId": storage_account_id,
                             "uri": blob_uri,
                         }
                     }

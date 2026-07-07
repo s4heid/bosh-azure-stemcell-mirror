@@ -32,7 +32,7 @@ done < <(azd env get-values)
 echo "Successfully loaded env vars from .env file."
 : ${AZURE_TENANT_ID:?"Error: Missing AZURE_TENANT_ID in .env file"}
 : ${AZURE_RESOURCE_GROUP:?"Error: Missing AZURE_RESOURCE_GROUP in .env file"}
-: ${AZURE_CONTAINER_APPS_JOB_NAME:?"Error: Missing AZURE_CONTAINER_APPS_JOB_NAME in .env file"}
+: ${AZURE_CONTAINER_APPS_JOB_NAMES:?"Error: Missing AZURE_CONTAINER_APPS_JOB_NAMES in .env file"}
 : ${AZURE_CONTAINER_REGISTRY_ENDPOINT:?"Error: Missing AZURE_CONTAINER_REGISTRY_ENDPOINT in .env file"}
 
 if [[ "${AZD_IS_PROVISIONED:-false}" != "true" ]]; then
@@ -53,8 +53,10 @@ az acr login --name "$AZURE_CONTAINER_REGISTRY_ENDPOINT"
 echo "Pushing Docker image ..."
 docker push "$image"
 
-echo "Updating Azure Container App Job..."
-az containerapp job update --name "$AZURE_CONTAINER_APPS_JOB_NAME" --resource-group "${AZURE_RESOURCE_GROUP}" --image "$image"
+for job_name in $AZURE_CONTAINER_APPS_JOB_NAMES; do
+    echo "Updating Azure Container App Job: ${job_name}..."
+    az containerapp job update --name "$job_name" --resource-group "${AZURE_RESOURCE_GROUP}" --image "$image"
+done
 
 echo
-echo "Deployed Azure Container App Job successfully."
+echo "Deployed Azure Container App Jobs successfully."

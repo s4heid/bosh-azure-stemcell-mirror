@@ -9,8 +9,11 @@ param environmentName string
 @description('Primary location for all resources')
 param location string
 
-@description('Cron expression for the job schedule (default: daily at 07:22 UTC)')
-param scheduleCronExpression string = '22 7 * * *'
+@description('Cron expression for the Jammy stemcell mirror job schedule (default: daily at 07:22 UTC)')
+param jammyScheduleCronExpression string = '22 7 * * *'
+
+@description('Cron expression for the Noble stemcell mirror job schedule (default: daily at 08:22 UTC)')
+param nobleScheduleCronExpression string = '22 8 * * *'
 
 param srcExists bool
 @secure()
@@ -108,7 +111,18 @@ module app 'app/app.bicep' = {
     storageAccountName: storageAccount.outputs.storageAccountName
     galleryName: gallery.outputs.name
     keyVaultName: keyVault.outputs.name
-    scheduleCronExpression: scheduleCronExpression
+    mirrors: [
+      {
+        suffix: 'jammy'
+        series: 'bosh-azure-hyperv-ubuntu-jammy-go_agent'
+        schedule: jammyScheduleCronExpression
+      }
+      {
+        suffix: 'noble'
+        series: 'bosh-azure-hyperv-ubuntu-noble'
+        schedule: nobleScheduleCronExpression
+      }
+    ]
   }
   scope: rg
 }
@@ -116,7 +130,7 @@ module app 'app/app.bicep' = {
 // `azd deploy` uses this endpoint to push images to the container registry
 output AZURE_CONTAINER_REGISTRY_ENDPOINT string = containerRegistry.outputs.loginServer
 output AZURE_MANAGED_IDENTITY_ID string = app.outputs.identityClientId
-output AZURE_CONTAINER_APPS_JOB_NAME string = app.outputs.name
+output AZURE_CONTAINER_APPS_JOB_NAMES string = join(app.outputs.jobNames, ' ')
 output AZURE_CONTAINER_APPS_ENVIRONMENT_ID string = appsEnvironment.outputs.id
 output AZD_IS_PROVISIONED bool = true
 

@@ -8,7 +8,8 @@ param applicationInsightsName string
 param storageAccountName string
 param galleryName string
 param keyVaultName string
-param scheduleCronExpression string
+@description('Stemcell mirrors to deploy as scheduled Container App jobs. Each item: { suffix, series, schedule }.')
+param mirrors array
 param exists bool
 @secure()
 param appDefinition object
@@ -126,123 +127,124 @@ module fetchLatestImage '../modules/fetch-container-image.bicep' = {
   }
 }
 
-resource app 'Microsoft.App/jobs@2024-03-01' = {
-  name: toLower('${name}-job')
-  location: location
-  tags: union(tags, { 'azd-service-name': 'bosh-azure-stemcell-mirror-job' })
-  dependsOn: [
-    contributorRole
-    storageBlobDataContributorRole
-    acrPullRole
-    galleryImageContributorRole
-    keyVaultSecretsUserRole
-  ]
-  identity: {
-    type: 'UserAssigned'
-    userAssignedIdentities: {
-      '${identity.id}': {}
-    }
-  }
-  properties: {
-    environmentId: containerAppsEnvironment.id
-    workloadProfileName: 'Consumption'
-    configuration: {
-      registries: [
-        {
-          server: containerRegistry.properties.loginServer
-          identity: identity.id
-        }
-      ]
-      secrets: union(
-        [],
-        map(secrets, secret => {
-          name: secret.secretRef
-          value: secret.value
-        })
-      )
-      replicaTimeout: 900 // 15 minutes
-      replicaRetryLimit: 1
-      manualTriggerConfig: {
-        replicaCompletionCount: 1
-        parallelism: 1
-      }
-      triggerType: 'Schedule'
-      scheduleTriggerConfig: {
-        cronExpression: scheduleCronExpression
+resource jobs 'Microsoft.App/jobs@2024-03-01' = [
+  for mirror in mirrors: {
+    name: toLower('${name}-${mirror.suffix}-job')
+    location: location
+    tags: union(tags, { 'azd-service-name': 'bosh-azure-stemcell-mirror-job-${mirror.suffix}' })
+    dependsOn: [
+      contributorRole
+      storageBlobDataContributorRole
+      acrPullRole
+      galleryImageContributorRole
+      keyVaultSecretsUserRole
+    ]
+    identity: {
+      type: 'UserAssigned'
+      userAssignedIdentities: {
+        '${identity.id}': {}
       }
     }
-    template: {
-      containers: [
-        {
-          image: fetchLatestImage.outputs.?containers[?0].?image ?? 'ghcr.io/s4heid/bosh-azure-stemcell-mirror:main'
-          name: 'mirror-daily'
-          env: union(
-            [
-              {
-                name: 'APPLICATIONINSIGHTS_CONNECTION_STRING'
-                value: applicationInsights.properties.ConnectionString
-              }
-              {
-                name: 'AZURE_MANAGED_IDENTITY_ID'
-                value: identity.properties.clientId
-              }
-              {
-                name: 'AZURE_SUBSCRIPTION_ID'
-                value: subscription().subscriptionId
-              }
-              {
-                name: 'AZURE_REGION'
-                value: location
-              }
-              {
-                name: 'AZURE_RESOURCE_GROUP'
-                value: resourceGroup().name
-              }
-              {
-                name: 'AZURE_STORAGE_ACCOUNT_NAME'
-                value: storageAccount.name
-              }
-              {
-                name: 'AZURE_GALLERY_NAME'
-                value: gallery.name
-              }
-              {
-                name: 'BASM_STEMCELL_SERIES'
-                value: 'bosh-azure-hyperv-ubuntu-jammy-go_agent'
-              }
-              {
-                name: 'BASM_MOUNTED_DIRECTORY'
-                value: '/stemcellfiles'
-              }
-            ],
-            env,
-            map(secrets, secret => {
-              name: secret.name
-              secretRef: secret.secretRef
-            })
-          )
-          resources: {
-            cpu: json('1.0')
-            memory: '2.0Gi'
+    properties: {
+      environmentId: containerAppsEnvironment.id
+      workloadProfileName: 'Consumption'
+      configuration: {
+        registries: [
+          {
+            server: containerRegistry.properties.loginServer
+            identity: identity.id
           }
-          volumeMounts: [
-            {
-              volumeName: 'stemcellvolume'
-              mountPath: '/stemcellfiles'
+        ]
+        secrets: union(
+          [],
+          map(secrets, secret => {
+            name: secret.secretRef
+            value: secret.value
+          })
+        )
+        replicaTimeout: 900 // 15 minutes
+        replicaRetryLimit: 1
+        manualTriggerConfig: {
+          replicaCompletionCount: 1
+          parallelism: 1
+        }
+        triggerType: 'Schedule'
+        scheduleTriggerConfig: {
+          cronExpression: mirror.schedule
+        }
+      }
+      template: {
+        containers: [
+          {
+            image: fetchLatestImage.outputs.?containers[?0].?image ?? 'ghcr.io/s4heid/bosh-azure-stemcell-mirror:main'
+            name: 'mirror-daily'
+            env: union(
+              [
+                {
+                  name: 'APPLICATIONINSIGHTS_CONNECTION_STRING'
+                  value: applicationInsights.properties.ConnectionString
+                }
+                {
+                  name: 'AZURE_MANAGED_IDENTITY_ID'
+                  value: identity.properties.clientId
+                }
+                {
+                  name: 'AZURE_SUBSCRIPTION_ID'
+                  value: subscription().subscriptionId
+                }
+                {
+                  name: 'AZURE_REGION'
+                  value: location
+                }
+                {
+                  name: 'AZURE_RESOURCE_GROUP'
+                  value: resourceGroup().name
+                }
+                {
+                  name: 'AZURE_STORAGE_ACCOUNT_NAME'
+                  value: storageAccount.name
+                }
+                {
+                  name: 'AZURE_GALLERY_NAME'
+                  value: gallery.name
+                }
+                {
+                  name: 'BASM_STEMCELL_SERIES'
+                  value: mirror.series
+                }
+                {
+                  name: 'BASM_MOUNTED_DIRECTORY'
+                  value: '/stemcellfiles'
+                }
+              ],
+              env,
+              map(secrets, secret => {
+                name: secret.name
+                secretRef: secret.secretRef
+              })
+            )
+            resources: {
+              cpu: json('1.0')
+              memory: '2.0Gi'
             }
-          ]
-        }
-      ]
-      volumes: [
-        {
-          name: 'stemcellvolume'
-          storageType: 'EmptyDir'
-        }
-      ]
+            volumeMounts: [
+              {
+                volumeName: 'stemcellvolume'
+                mountPath: '/stemcellfiles'
+              }
+            ]
+          }
+        ]
+        volumes: [
+          {
+            name: 'stemcellvolume'
+            storageType: 'EmptyDir'
+          }
+        ]
+      }
     }
   }
-}
+]
 
-output name string = app.name
-output id string = app.id
+output jobNames array = [for i in range(0, length(mirrors)): jobs[i].name]
 output identityClientId string = identity.properties.clientId

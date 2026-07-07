@@ -3,32 +3,32 @@
 [![Tests](https://github.com/s4heid/bosh-azure-stemcell-mirror/actions/workflows/test.yaml/badge.svg?branch=main)](https://github.com/s4heid/bosh-azure-stemcell-mirror/actions/workflows/test.yaml)
 [![Open in Dev Containers](https://img.shields.io/static/v1?label=Dev%20Containers&message=Open&color=blue)](https://vscode.dev/redirect?url=vscode://ms-vscode-remote.remote-containers/cloneInVolume?url=https://github.com/s4heid/bosh-azure-stemcell-mirror)
 
-This repository contains an Azure Container Apps Job that mirrors BOSH stemcells from [bosh.io](https://bosh.io/stemcells) to an [Azure Compute Gallery](https://learn.microsoft.com/en-us/azure/virtual-machines/azure-compute-gallery).
+This repository contains Azure Container Apps Jobs that mirror BOSH stemcells from [bosh.io](https://bosh.io/stemcells) to an [Azure Compute Gallery](https://learn.microsoft.com/en-us/azure/virtual-machines/azure-compute-gallery).
 
-The job runs on a scheduled basis (daily by default) to check for new stemcell versions and automatically uploads them to your Azure infrastructure.
+By default it deploys one scheduled job per Ubuntu stemcell series — Jammy (22.04) and Noble (24.04). Each job checks bosh.io for new versions of its series on its own schedule and uploads them to your Azure infrastructure.
 
 ## Architecture
 
 ```mermaid
 sequenceDiagram
-    participant User
-    participant StemcellMirror as StemcellMirror.run()
+    participant Scheduler
+    participant Mirror as Mirror Job
     participant BoshIO as bosh.io
     participant Storage as Azure Storage Account
     participant Gallery as Azure Compute Gallery
 
-    User->>StemcellMirror: Invoke
-    StemcellMirror->>Gallery: gallery_image_version_exists?
-    alt VersionExists
-        StemcellMirror->>User: No new stemcell required
-    else NoVersionFound
-        StemcellMirror->>BoshIO: Download latest stemcell (tgz)
-        StemcellMirror->>StemcellMirror: Extract .vhd from tgz
-        StemcellMirror->>Storage: Upload root.vhd
-        StemcellMirror->>Gallery: check_or_create_gallery_image
-        StemcellMirror->>Gallery: create_gallery_image_version
+    Scheduler->>Mirror: Trigger on schedule (one job per series)
+    Mirror->>BoshIO: Get latest stemcell version
+    Mirror->>Gallery: gallery_image_version_exists?
+    alt Version already mirrored
+        Mirror-->>Scheduler: Nothing to do
+    else New version found
+        Mirror->>BoshIO: Download stemcell (.tgz)
+        Mirror->>Mirror: Extract root.vhd and read stemcell.MF
+        Mirror->>Gallery: check_or_create_gallery_image (definition)
+        Mirror->>Storage: Upload root.vhd
+        Mirror->>Gallery: create_gallery_image_version
     end
-    StemcellMirror->>User: Completed stemcell check
 ```
 
 ## Prerequisites
@@ -73,7 +73,7 @@ This command will:
 - Provision all required Azure resources (see [Infrastructure](#infrastructure) section)
 - Build the Docker container image
 - Push the image to Azure Container Registry
-- Deploy the Container Apps Job
+- Deploy the Container Apps Jobs
 
 Alternatively, you can run these steps separately:
 
@@ -92,8 +92,8 @@ The deployment creates the following Azure resources:
 | **Container Registry** | Stores Docker images |
 | **Storage Account** | Stores stemcell VHD files |
 | **Compute Gallery** | Stores stemcell image definitions and versions |
-| **Container Apps Environment** | Runtime environment for the job |
-| **Container Apps Job** | Scheduled job that runs the mirror process |
+| **Container Apps Environment** | Runtime environment for the jobs |
+| **Container Apps Jobs** | One scheduled job per stemcell series that runs the mirror process |
 | **Log Analytics Workspace** | Collects logs and telemetry |
 | **Application Insights** | Application monitoring and diagnostics |
 | **Key Vault** | Securely stores sensitive configuration (e.g., GitHub token) |
@@ -106,7 +106,7 @@ The managed identity is automatically assigned the following roles:
 - **Contributor** (Resource Group scope): For managing compute resources
 - **Storage Blob Data Contributor** (Storage Account scope): For uploading VHD files
 - **AcrPull** (Container Registry scope): For pulling container images
-- **Compute Gallery Sharing Admin** (Compute Gallery scope): For creating gallery images
+- **Compute Gallery Artifacts Publisher** (Compute Gallery scope): For creating gallery image definitions and versions
 - **Key Vault Secrets User** (Key Vault scope): For reading secrets from Key Vault
 
 ## Configuration
@@ -134,28 +134,31 @@ These variables are automatically configured by the deployment:
 |----------|-------------|---------|
 | `BASM_GALLERY_PUBLISHER` | Gallery image publisher | `bosh` |
 | `BASM_GALLERY_OFFER` | Gallery image offer | Extracted from stemcell series |
-| `BASM_GALLERY_SKU` | Gallery image SKU | Extracted from stemcell series |
-| `BASM_GALLERY_IMAGE_NAME` | Gallery image definition name | Extracted from stemcell series |
+| `BASM_GALLERY_SKU` | Gallery image SKU | Generation of the stemcell (`gen1`/`gen2`) |
 
-#### (Optional) Stemcell
+#### (Optional) Stemcell Mirror
 
 ##### bosh.io
+
+Each job mirrors a single stemcell series, selected with `BASM_STEMCELL_SERIES`. The gallery image definition is named after the series.
 
 | Variable | Description | Default |
 |----------|-------------|---------|
 | `BASM_STEMCELL_SERIES` | BOSH stemcell series to mirror (from bosh.io) | `bosh-azure-hyperv-ubuntu-jammy-go_agent` |
-| `BASM_MOUNTED_DIRECTORY` | Directory for temporary extraction. | `/stemcellfiles` |
 
 > [!IMPORTANT]
-> The `BASM_STEMCELL_SERIES` environment variable must be set to a valid bosh.io stemcell series name (e.g. `bosh-azure-hyperv-ubuntu-noble-go_agent`, `bosh-azure-hyperv-ubuntu-jammy-go_agent`, `bosh-azure-hyperv-ubuntu-xenial-go_agent`).
+> Only the following series are supported. Any other value causes the job to fail with an `Unsupported stemcell series` error:
 >
-> A list of available stemcell series can be found at [bosh.io/stemcells](https://bosh.io/stemcells/).
+> - `bosh-azure-hyperv-ubuntu-jammy-go_agent` — Ubuntu Jammy 22.04 (`BoshIoJammyMirror`)
+> - `bosh-azure-hyperv-ubuntu-noble` — Ubuntu Noble 24.04 (`BoshIoNobleMirror`)
+>
+> To mirror another series, add a matching mirror class in [`src/mirror/bosh_io.py`](src/mirror/bosh_io.py). Available series are listed at [bosh.io/stemcells](https://bosh.io/stemcells/).
 
 ##### Ephemeral Storage
 
 | Variable | Description | Default |
 |----------|-------------|---------|
-| `BASM_MOUNTED_DIRECTORY` | Directory for temporary extraction. | `/stemcellfiles` |
+| `BASM_MOUNTED_DIRECTORY` | Directory for extraction. | Temporary directory within the container (`/tmp/`). |
 
 > [!NOTE]
 > The `BASM_MOUNTED_DIRECTORY` allows you to set a custom temporary extraction directory within the container. This is helpful if you want to use smaller container sizes with ephemeral storage for extraction, since downloaded stemcells are usually larger than 5GB.
@@ -201,7 +204,7 @@ AZURE_KEY_VAULT_NAME=<key-vault-name>
 
 #### Job Resources
 
-The Container Apps Job is configured with:
+Each Container Apps Job is configured with:
 
 - **CPU**: 1.0 cores
 - **Memory**: 2.0 GiB
@@ -210,22 +213,31 @@ The Container Apps Job is configured with:
 
 These can be adjusted in [`infra/app/app.bicep`](infra/app/app.bicep) if needed.
 
+#### Schedules
+
+Each series is mirrored by its own job on an independent cron schedule, configured in [`infra/main.bicep`](infra/main.bicep):
+
+| Job | Parameter | Default |
+|-----|-----------|---------|
+| Jammy | `jammyScheduleCronExpression` | `22 7 * * *` (daily, 07:22 UTC) |
+| Noble | `nobleScheduleCronExpression` | `22 8 * * *` (daily, 08:22 UTC) |
+
 #### Storage Volume
 
 The job uses an EmptyDir volume mounted at `/stemcellfiles` for temporary extraction of stemcell archives. This provides better performance than using system temp directories.
 
 ## Manual Execution
 
-To manually trigger the job:
+Each stemcell series has its own job. To manually trigger one:
 
 ```bash
 az containerapp job start --name <job-name> --resource-group <resource-group>
 ```
 
-You can find the job name and resource group in the `.azure/<environment-name>/.env` file after deployment:
+The job names (one per series, space-separated) and resource group are in the `.azure/<environment-name>/.env` file after deployment:
 
 ```bash
-AZURE_CONTAINER_APPS_JOB_NAME=<job-name>
+AZURE_CONTAINER_APPS_JOB_NAMES=<jammy-job-name> <noble-job-name>
 AZURE_RESOURCE_GROUP=<resource-group>
 ```
 
@@ -235,7 +247,7 @@ AZURE_RESOURCE_GROUP=<resource-group>
 
 View logs in Azure Portal:
 
-1. Navigate to your Container Apps Job
+1. Navigate to the Container Apps Job you want to inspect
 2. Select **Execution history**
 3. Click on a specific execution to view logs
 
@@ -286,7 +298,7 @@ export AZURE_RESOURCE_GROUP="<your-resource-group>"
 export AZURE_STORAGE_ACCOUNT_NAME="<your-storage-account>"
 # ... other required variables (see .env.template)
 
-python src/main.py
+python -m src.main
 ```
 
 > [!IMPORTANT]
@@ -294,7 +306,7 @@ python src/main.py
 
 ### Code Quality
 
-The project uses Ruff for linting and Black for code formatting. Configuration is in [`pyproject.toml`](pyproject.toml):
+Code is formatted with [Black](https://black.readthedocs.io/) (included in `requirements-dev.txt` and enforced in CI). [Ruff](https://docs.astral.sh/ruff/) linting rules are configured in [`pyproject.toml`](pyproject.toml):
 
 ```bash
 # Format code
