@@ -57,7 +57,9 @@ class BoshIoStemcellMirror(StemcellMirror):
             return
 
         latest_stemcell: dict = stemcells[0]
-        latest_version: str = latest_stemcell.get("version")
+        latest_version: str | None = latest_stemcell.get("version")
+        if not latest_version:
+            raise ValueError(f"Latest stemcell for series '{self.stemcell_series}' is missing a version.")
         sc_version: Version = Version.parse(latest_version, optional_minor_and_patch=True)
         formatted_latest_version: str = f"{sc_version.major}.{sc_version.minor}.{sc_version.patch}"
         download_url: str | None = latest_stemcell.get("regular", {}).get("url")
@@ -104,6 +106,9 @@ class BoshIoStemcellMirror(StemcellMirror):
             shutil.rmtree(extracted_stemcell_dir, ignore_errors=True)
 
     def _notify_new_stemcell(self, version: str) -> None:
+        notifier = self.notifier
+        if notifier is None:
+            return
         metadata: dict[str, str] = {
             "gallery_name": self.gallery_name,
             "gallery_image_name": self.gallery_image_name,
@@ -112,7 +117,7 @@ class BoshIoStemcellMirror(StemcellMirror):
             "gallery_resource_group": self.azure_manager.resource_group,
         }
         self.logger.info("Dispatching notifications for new stemcell version %s...", version)
-        self.notifier.notify_new_stemcell(metadata)
+        notifier.notify_new_stemcell(metadata)
 
     def _download_stemcell(self, url: str, extract_path: str) -> str:
         """

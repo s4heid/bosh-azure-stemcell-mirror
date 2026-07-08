@@ -3,8 +3,6 @@ import unittest.mock
 from unittest.mock import MagicMock, mock_open, patch
 
 from azure.core.exceptions import ResourceNotFoundError
-from azure.mgmt.compute import ComputeManagementClient
-from azure.storage.blob import BlobServiceClient, ContainerClient
 
 from src.azure_manager import AzureManager, _normalize_architecture
 
@@ -12,7 +10,7 @@ from src.azure_manager import AzureManager, _normalize_architecture
 class TestAzureManager(unittest.TestCase):
     @patch("src.azure_manager.DefaultAzureCredential")
     @patch("src.azure_manager.ComputeManagementClient")
-    def setUp(self, mock_compute_client, mock_credential) -> None:
+    def setUp(self, mock_compute_client: MagicMock, mock_credential: MagicMock) -> None:
         self.mock_logger = MagicMock()
         self.manager = AzureManager(
             subscription_id="test-subscription-id",
@@ -24,8 +22,8 @@ class TestAzureManager(unittest.TestCase):
         self.mock_compute_client = mock_compute_client
 
     @patch("src.azure_manager.BlobServiceClient")
-    def test_setup_storage(self, mock_blob_service_client: BlobServiceClient) -> None:
-        mock_container_client: ContainerClient = make_mock_container_client(mock_blob_service_client, exists=False)
+    def test_setup_storage(self, mock_blob_service_client: MagicMock) -> None:
+        mock_container_client = make_mock_container_client(mock_blob_service_client, exists=False)
 
         self.manager.setup_storage("teststorage123", "testcontainer123")
 
@@ -34,8 +32,8 @@ class TestAzureManager(unittest.TestCase):
         mock_container_client.create_container.assert_called_once()
 
     @patch("src.azure_manager.BlobServiceClient")
-    def test_upload_vhd(self, mock_blob_service_client: BlobServiceClient) -> None:
-        mock_container_client: ContainerClient = make_mock_container_client(mock_blob_service_client)
+    def test_upload_vhd(self, mock_blob_service_client: MagicMock) -> None:
+        mock_container_client = make_mock_container_client(mock_blob_service_client)
         self.manager.setup_storage("teststorage", "testcontainer")
 
         with patch("builtins.open", mock_open(read_data=b"fake-vhd")):
@@ -152,7 +150,7 @@ class TestAzureManager(unittest.TestCase):
         self.assertTrue(result)
 
 
-def make_mock_container_client(blob_service_client: ComputeManagementClient, exists: bool = True) -> ContainerClient:
+def make_mock_container_client(blob_service_client: MagicMock, exists: bool = True) -> MagicMock:
     mock_container_client = MagicMock()
     mock_container_client.upload_blob.return_value = mock_container_client
     mock_container_client.exists.return_value = exists

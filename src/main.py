@@ -10,7 +10,6 @@ from .config import (
     load_mirror_config,
 )
 from .mirror.bosh_io import BoshIoJammyMirror, BoshIoNobleMirror, BoshIoStemcellMirror
-from .mirror.stemcell_mirror import StemcellMirror
 from .notify.notifier import Notifier
 
 MIRROR_TYPES: tuple[type[BoshIoStemcellMirror], ...] = (BoshIoJammyMirror, BoshIoNobleMirror)
@@ -37,7 +36,7 @@ def build_mirror(
     mirror_config: MirrorConfig,
     notifier: Notifier | None,
     logger: logging.Logger,
-) -> StemcellMirror:
+) -> BoshIoStemcellMirror:
     """Build the stemcell mirror for the configured series."""
     for mirror_cls in MIRROR_TYPES:
         if mirror_cls.stemcell_series == mirror_config.stemcell_series:

@@ -107,7 +107,7 @@ class AzureManager:
         except ResourceNotFoundError:
             self.logger.info("Creating new gallery image definition...")
             generation: str = str(cloud_properties.get("generation", DEFAULT_GENERATION))
-            gallery_image_params: GalleryImage = GalleryImage(
+            gallery_image_params: GalleryImage = GalleryImage(  # pyright: ignore[reportCallIssue]
                 location=self.location,
                 identifier=GalleryImageIdentifier(
                     publisher=os.environ.get("BASM_GALLERY_PUBLISHER", "bosh"),
