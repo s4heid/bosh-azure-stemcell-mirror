@@ -161,6 +161,8 @@ class TestBoshIoStemcellMirror(unittest.TestCase):
         jammy = BoshIoJammyMirror(azure_manager=self.mock_azure_manager, gallery_name="gallery")
         noble = BoshIoNobleMirror(azure_manager=self.mock_azure_manager, gallery_name="gallery")
 
+        self.assertEqual(jammy.name, "boshio/ubuntu-jammy")
+        self.assertEqual(noble.name, "boshio/ubuntu-noble")
         self.assertEqual(jammy.stemcell_series, JAMMY_SERIES)
         self.assertEqual(noble.stemcell_series, "bosh-azure-hyperv-ubuntu-noble")
         self.assertEqual(jammy.gallery_image_name, JAMMY_SERIES)

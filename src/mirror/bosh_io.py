@@ -206,10 +206,12 @@ class BoshIoStemcellMirror(StemcellMirror):
 class BoshIoJammyMirror(BoshIoStemcellMirror):
     """Mirrors the Ubuntu Jammy (22.04) bosh.io Azure stemcell."""
 
+    name = "boshio/ubuntu-jammy"
     stemcell_series = "bosh-azure-hyperv-ubuntu-jammy-go_agent"
 
 
 class BoshIoNobleMirror(BoshIoStemcellMirror):
     """Mirrors the Ubuntu Noble (24.04) bosh.io Azure stemcell."""
 
+    name = "boshio/ubuntu-noble"
     stemcell_series = "bosh-azure-hyperv-ubuntu-noble"

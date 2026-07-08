@@ -37,9 +37,9 @@ def build_mirror(
     notifier: Notifier | None,
     logger: logging.Logger,
 ) -> BoshIoStemcellMirror:
-    """Build the stemcell mirror for the configured series."""
+    """Build the stemcell mirror for the configured mirror key."""
     for mirror_cls in MIRROR_TYPES:
-        if mirror_cls.stemcell_series == mirror_config.stemcell_series:
+        if mirror_cls.name == mirror_config.mirror:
             return mirror_cls(
                 azure_manager=azure_manager,
                 gallery_name=azure_config.gallery_name,
@@ -48,8 +48,8 @@ def build_mirror(
                 logger=logger,
             )
 
-    supported = ", ".join(cls.stemcell_series for cls in MIRROR_TYPES)
-    raise ValueError(f"Unsupported stemcell series '{mirror_config.stemcell_series}'. Supported series: {supported}")
+    supported = ", ".join(cls.name for cls in MIRROR_TYPES)
+    raise ValueError(f"Unsupported mirror '{mirror_config.mirror}'. Supported mirrors: {supported}")
 
 
 def main() -> int:
@@ -74,7 +74,7 @@ def main() -> int:
     mirror = build_mirror(azure_manager, azure_config, mirror_config, notifier, logger)
     mirror_name = type(mirror).__name__
 
-    logger.info("Starting %s for series '%s'...", mirror_name, mirror_config.stemcell_series)
+    logger.info("Starting %s for mirror '%s'...", mirror_name, mirror_config.mirror)
     mirror.run()
     logger.info("Completed %s.", mirror_name)
 

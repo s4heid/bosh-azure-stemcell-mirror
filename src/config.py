@@ -5,8 +5,8 @@ from dataclasses import dataclass
 from .notify.github import GitHubNotifier, GitHubNotifierConfig
 from .notify.notifier import Notifier
 
-# Default bosh.io stemcell series to mirror when BASM_STEMCELL_SERIES is unset.
-DEFAULT_STEMCELL_SERIES = "bosh-azure-hyperv-ubuntu-jammy-go_agent"
+# Default mirror to run when BASM_MIRROR is unset.
+DEFAULT_MIRROR = "boshio/ubuntu-jammy"
 
 
 @dataclass(frozen=True)
@@ -26,7 +26,7 @@ class AzureConfig:
 class MirrorConfig:
     """Runtime configuration for the stemcell mirror."""
 
-    stemcell_series: str
+    mirror: str
     mounted_directory: str
 
 
@@ -45,7 +45,7 @@ def load_azure_config() -> AzureConfig:
 def load_mirror_config() -> MirrorConfig:
     """Read the stemcell mirror runtime configuration from environment variables."""
     return MirrorConfig(
-        stemcell_series=os.environ.get("BASM_STEMCELL_SERIES", DEFAULT_STEMCELL_SERIES),
+        mirror=os.environ.get("BASM_MIRROR", DEFAULT_MIRROR),
         mounted_directory=os.environ.get("BASM_MOUNTED_DIRECTORY", ""),
     )
 

@@ -114,12 +114,12 @@ module app 'app/app.bicep' = {
     mirrors: [
       {
         suffix: 'jammy'
-        series: 'bosh-azure-hyperv-ubuntu-jammy-go_agent'
+        name: 'boshio/ubuntu-jammy'
         schedule: jammyScheduleCronExpression
       }
       {
         suffix: 'noble'
-        series: 'bosh-azure-hyperv-ubuntu-noble'
+        name: 'boshio/ubuntu-noble'
         schedule: nobleScheduleCronExpression
       }
     ]

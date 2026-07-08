@@ -8,7 +8,7 @@ param applicationInsightsName string
 param storageAccountName string
 param galleryName string
 param keyVaultName string
-@description('Stemcell mirrors to deploy as scheduled Container App jobs. Each item: { suffix, series, schedule }.')
+@description('Stemcell mirrors to deploy as scheduled Container App jobs. Each item: { suffix, name, schedule }.')
 param mirrors array
 param exists bool
 @secure()
@@ -209,8 +209,8 @@ resource jobs 'Microsoft.App/jobs@2024-03-01' = [
                   value: gallery.name
                 }
                 {
-                  name: 'BASM_STEMCELL_SERIES'
-                  value: mirror.series
+                  name: 'BASM_MIRROR'
+                  value: mirror.name
                 }
                 {
                   name: 'BASM_MOUNTED_DIRECTORY'

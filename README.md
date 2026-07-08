@@ -138,21 +138,19 @@ These variables are automatically configured by the deployment:
 
 #### (Optional) Stemcell Mirror
 
-##### bosh.io
-
-Each job mirrors a single stemcell series, selected with `BASM_STEMCELL_SERIES`. The gallery image definition is named after the series.
+Each job runs a single mirror, selected with `BASM_MIRROR`. The value is a source-namespaced key of the form `<source>/<series>`, which makes the mirror source explicit (bosh.io today) and leaves room for additional sources later. The gallery image definition is named after the underlying stemcell series.
 
 | Variable | Description | Default |
 |----------|-------------|---------|
-| `BASM_STEMCELL_SERIES` | BOSH stemcell series to mirror (from bosh.io) | `bosh-azure-hyperv-ubuntu-jammy-go_agent` |
+| `BASM_MIRROR` | Mirror to run, as a `<source>/<series>` key | `boshio/ubuntu-jammy` |
 
 > [!IMPORTANT]
-> Only the following series are supported. Any other value causes the job to fail with an `Unsupported stemcell series` error:
+> Only the following mirrors are supported. Any other value causes the job to fail with an `Unsupported mirror` error:
 >
-> - `bosh-azure-hyperv-ubuntu-jammy-go_agent` — Ubuntu Jammy 22.04 (`BoshIoJammyMirror`)
-> - `bosh-azure-hyperv-ubuntu-noble` — Ubuntu Noble 24.04 (`BoshIoNobleMirror`)
+> - `boshio/ubuntu-jammy` — Ubuntu Jammy 22.04 from bosh.io (`BoshIoJammyMirror`)
+> - `boshio/ubuntu-noble` — Ubuntu Noble 24.04 from bosh.io (`BoshIoNobleMirror`)
 >
-> To mirror another series, add a matching mirror class in [`src/mirror/bosh_io.py`](src/mirror/bosh_io.py). Available series are listed at [bosh.io/stemcells](https://bosh.io/stemcells/).
+> To add a mirror, define a class with a unique `name` in [`src/mirror/bosh_io.py`](src/mirror/bosh_io.py) (or a new source module) and register it in `MIRROR_TYPES`. Available bosh.io series are listed at [bosh.io/stemcells](https://bosh.io/stemcells/).
 
 ##### Ephemeral Storage
 

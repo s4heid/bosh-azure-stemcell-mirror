@@ -62,17 +62,17 @@ class TestConfig(unittest.TestCase):
         config = load_mirror_config()
 
         self.assertEqual(config.mounted_directory, "/mnt/data")
-        self.assertEqual(config.stemcell_series, "bosh-azure-hyperv-ubuntu-jammy-go_agent")
+        self.assertEqual(config.mirror, "boshio/ubuntu-jammy")
 
     @patch.dict(
         "os.environ",
-        {"BASM_STEMCELL_SERIES": "bosh-azure-hyperv-ubuntu-noble"},
+        {"BASM_MIRROR": "boshio/ubuntu-noble"},
         clear=True,
     )
-    def test_load_mirror_config_reads_series(self):
+    def test_load_mirror_config_reads_mirror(self):
         config = load_mirror_config()
 
-        self.assertEqual(config.stemcell_series, "bosh-azure-hyperv-ubuntu-noble")
+        self.assertEqual(config.mirror, "boshio/ubuntu-noble")
         self.assertEqual(config.mounted_directory, "")
 
 

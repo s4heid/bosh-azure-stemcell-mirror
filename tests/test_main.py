@@ -20,14 +20,14 @@ class TestBuildMirror(unittest.TestCase):
         )
         self.logger = logging.getLogger("test")
 
-    def _mirror_config(self, series: str) -> MirrorConfig:
-        return MirrorConfig(stemcell_series=series, mounted_directory="/tmp")
+    def _mirror_config(self, mirror: str) -> MirrorConfig:
+        return MirrorConfig(mirror=mirror, mounted_directory="/tmp")
 
     def test_build_jammy_mirror(self):
         mirror = build_mirror(
             self.azure_manager,
             self.azure_config,
-            self._mirror_config("bosh-azure-hyperv-ubuntu-jammy-go_agent"),
+            self._mirror_config("boshio/ubuntu-jammy"),
             None,
             self.logger,
         )
@@ -40,19 +40,19 @@ class TestBuildMirror(unittest.TestCase):
         mirror = build_mirror(
             self.azure_manager,
             self.azure_config,
-            self._mirror_config("bosh-azure-hyperv-ubuntu-noble"),
+            self._mirror_config("boshio/ubuntu-noble"),
             None,
             self.logger,
         )
 
         self.assertIsInstance(mirror, BoshIoNobleMirror)
 
-    def test_build_unsupported_series_raises(self):
+    def test_build_unsupported_mirror_raises(self):
         with self.assertRaises(ValueError):
             build_mirror(
                 self.azure_manager,
                 self.azure_config,
-                self._mirror_config("bosh-azure-hyperv-ubuntu-xenial-go_agent"),
+                self._mirror_config("boshio/ubuntu-xenial"),
                 None,
                 self.logger,
             )
