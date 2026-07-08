@@ -5,7 +5,18 @@ import uuid
 from azure.core.exceptions import HttpResponseError, ResourceNotFoundError
 from azure.identity import AzureAuthorityHosts, DefaultAzureCredential
 from azure.mgmt.compute import ComputeManagementClient
-from azure.mgmt.compute.models import GalleryImage, GalleryImageFeature, GalleryImageIdentifier
+from azure.mgmt.compute.models import (
+    GalleryDiskImageSource,
+    GalleryImage,
+    GalleryImageFeature,
+    GalleryImageIdentifier,
+    GalleryImageVersion,
+    GalleryImageVersionProperties,
+    GalleryImageVersionPublishingProfile,
+    GalleryImageVersionStorageProfile,
+    GalleryOSDiskImage,
+    TargetRegion,
+)
 from azure.storage.blob import BlobServiceClient, ContainerClient
 
 DEFAULT_GENERATION = "gen1"
@@ -184,23 +195,28 @@ class AzureManager:
             f"/subscriptions/{self.subscription_id}/resourceGroups/{self.resource_group}"
             f"/providers/Microsoft.Storage/storageAccounts/{self.storage_account_name}"
         )
+        image_version = GalleryImageVersion(
+            location=self.location,
+            properties=GalleryImageVersionProperties(
+                publishing_profile=GalleryImageVersionPublishingProfile(
+                    target_regions=[TargetRegion(name=self.location, regional_replica_count=1)],
+                ),
+                storage_profile=GalleryImageVersionStorageProfile(
+                    os_disk_image=GalleryOSDiskImage(
+                        source=GalleryDiskImageSource(
+                            storage_account_id=storage_account_id,
+                            uri=blob_uri,
+                        ),
+                    ),
+                ),
+            ),
+        )
         self.compute_client.gallery_image_versions.begin_create_or_update(
             self.resource_group,
             gallery_name,
             gallery_image_name,
             gallery_image_version,
-            {
-                "location": self.location,
-                "publishingProfile": {"targetRegions": [{"name": self.location, "regionalReplicaCount": 1}]},
-                "storageProfile": {
-                    "osDiskImage": {
-                        "source": {
-                            "storageAccountId": storage_account_id,
-                            "uri": blob_uri,
-                        }
-                    }
-                },
-            },
+            image_version,
         )
         self.logger.info(f"Gallery image version {gallery_image_version} creation initiated.")
 

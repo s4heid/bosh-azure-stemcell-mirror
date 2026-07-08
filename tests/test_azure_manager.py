@@ -149,6 +149,24 @@ class TestAzureManager(unittest.TestCase):
 
         self.assertTrue(result)
 
+    def test_create_gallery_image_version_nests_properties(self):
+        self.manager.storage_account_name = "teststorage"
+
+        self.manager.create_gallery_image_version("gallery", "img", "1.2.3", "https://blob/root.vhd")
+
+        begin = self.mock_compute_client.return_value.gallery_image_versions.begin_create_or_update
+        begin.assert_called_once()
+        image_version = begin.call_args.args[4]
+        body = image_version.as_dict()
+
+        self.assertNotIn("publishingProfile", body)
+        self.assertNotIn("storageProfile", body)
+        properties = body["properties"]
+        self.assertEqual(properties["publishingProfile"]["targetRegions"][0]["name"], "test-location")
+        source = properties["storageProfile"]["osDiskImage"]["source"]
+        self.assertEqual(source["uri"], "https://blob/root.vhd")
+        self.assertIn("teststorage", source["storageAccountId"])
+
 
 def make_mock_container_client(blob_service_client: MagicMock, exists: bool = True) -> MagicMock:
     mock_container_client = MagicMock()
