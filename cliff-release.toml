@@ -43,7 +43,7 @@ commit_parsers = [
     { message = "^perf", group = "Performance Improvements" },
     { message = "^refactor", group = "Code Refactoring" },
     { message = "^docs", group = "Documentation" },
-    { message = "^ci", group = "Continous Integration" },
+    { message = "^ci", group = "Continuous Integration" },
     { message = "^chore", group = "Chores" },
 ]
 link_parsers = [
