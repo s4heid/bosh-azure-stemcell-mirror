@@ -40,7 +40,7 @@ click==8.4.2
     # via black
 coverage==7.15.0
     # via -r requirements-dev.in
-cryptography==49.0.0
+cryptography==50.0.0
     # via
     #   -r requirements.txt
     #   azure-identity
