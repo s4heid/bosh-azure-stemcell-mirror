@@ -1,7 +1,13 @@
 
-<a name="unreleased"></a>
-## [Unreleased]
+<a name="v0.0.2"></a>
+## [v0.0.2] - 2026-08-27
+### Bug Fixes
+- [`79b4787`](https://github.com/s4heid/bosh-azure-stemcell-mirror/commit/79b47871df2b904dbd71d8d9f10789f2d42bbe9b) release pipeline
+- [`42249db`](https://github.com/s4heid/bosh-azure-stemcell-mirror/commit/42249dbb37ad4f0f922d54838ca449a7e76d6676) serialize the gallery image definition body correctly
+
 ### Chores
+- [`aca476c`](https://github.com/s4heid/bosh-azure-stemcell-mirror/commit/aca476c9e9f6d97885428387b8fd4d836c7b0a52) **deps:** bump cryptography from 49.0.0 to 50.0.0
+- [`f8e52af`](https://github.com/s4heid/bosh-azure-stemcell-mirror/commit/f8e52af47f4d06d2d4bb7b75ff91ef591acb0f3a) configure ruff and black extensions
 - [`08d6938`](https://github.com/s4heid/bosh-azure-stemcell-mirror/commit/08d69383cfbd8e4779c2f5468104a1b199e9f60f) **deps:** upgrade python and python dependencies
 - [`f9078ce`](https://github.com/s4heid/bosh-azure-stemcell-mirror/commit/f9078cedec2937f1626fb416154664326358f5cd) upgrade devcontainer python version
 - [`e6391d7`](https://github.com/s4heid/bosh-azure-stemcell-mirror/commit/e6391d78f57dd223caee8eea06955910a6a859f4) **deps:** upgrade dependencies
@@ -12,13 +18,16 @@
 - [`19d1195`](https://github.com/s4heid/bosh-azure-stemcell-mirror/commit/19d1195c94ec0e51974a54008c1e7faa14500568) **deps:** upgrade actions/checkout to v5
 - [`4e4bf71`](https://github.com/s4heid/bosh-azure-stemcell-mirror/commit/4e4bf713a862595d4261c58a56130167be605ae2) update changelog for v0.0.1
 
-### Continous Integration
+### Continuous Integration
 - [`2ab6937`](https://github.com/s4heid/bosh-azure-stemcell-mirror/commit/2ab6937f3edf41da902eb3b0d6e218837818f91e) add support for cross-platform builds
 
 ### Documentation
 - [`456d0e4`](https://github.com/s4heid/bosh-azure-stemcell-mirror/commit/456d0e4c889c59c5f0440b80916c2af7c860ef9e) update readme
 
 ### Features
+- [`a983d44`](https://github.com/s4heid/bosh-azure-stemcell-mirror/commit/a983d44ceddeb58e1cfea302642d4fa361316143) select mirror by a stable key
+- [`3ad51b4`](https://github.com/s4heid/bosh-azure-stemcell-mirror/commit/3ad51b45113d98d7a4589be209e34496dcf22a8e) support gen2 images and refactor
+- [`11f09b1`](https://github.com/s4heid/bosh-azure-stemcell-mirror/commit/11f09b147dbe0435ca57102ce4e2968fc371542d) switch from deprecated git-chglog to git-cliff
 - [`45ad522`](https://github.com/s4heid/bosh-azure-stemcell-mirror/commit/45ad52221fed963a96390110c07ed6d3637903b4) add notifier
 
 <a name="v0.0.1"></a>
@@ -32,7 +41,7 @@
 - [`e08cfd6`](https://github.com/s4heid/bosh-azure-stemcell-mirror/commit/e08cfd64009ac2198173c10f6eab927d4e989b7c) add license
 - [`ac4d105`](https://github.com/s4heid/bosh-azure-stemcell-mirror/commit/ac4d10522f28b0da258976f30c8a2240da3b2ddb) change module structure
 
-### Continous Integration
+### Continuous Integration
 - [`e87e62b`](https://github.com/s4heid/bosh-azure-stemcell-mirror/commit/e87e62bd93f15e5f29887a3aebd84a61a21a8142) add release pipeline
 - [`a9a4cdf`](https://github.com/s4heid/bosh-azure-stemcell-mirror/commit/a9a4cdf791b048cab42cc434a33428aef2bfe88b) add unit test workflow
 
@@ -47,5 +56,5 @@
 - [`5e91d46`](https://github.com/s4heid/bosh-azure-stemcell-mirror/commit/5e91d46adec373c7040db76a59f8a14ca8b94441) Convert to Azure Container App
 - [`90c8af9`](https://github.com/s4heid/bosh-azure-stemcell-mirror/commit/90c8af95c69b84d0aa150793b272c63a60b7312b) init
 
-[Unreleased]: https://github.com/s4heid/bosh-azure-stemcell-mirror/compare/v0.0.1...HEAD
+[v0.0.2]: https://github.com/s4heid/bosh-azure-stemcell-mirror/compare/v0.0.1...v0.0.2
 
